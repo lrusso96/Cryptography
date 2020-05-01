@@ -1,0 +1,28 @@
+\chapter{Sicurezza incondizionata}
+\paragraph*{Esercizio 2.1}
+In questo caso è possibile usare un attacco a forza bruta e testare, quindi, tutte e 26 le chiavi per scoprire il messaggio originale.
+Se, però, si osserva che le lettere \emph{R}, \emph{X} e \emph{N} compaiono alla fine di alcune parole, e si ipotizza che esse siano delle vocali nel messaggio originale, il numero di tentativi si restringe ulteriormente.
+Per k = \textbf{17}, si ha la soluzione:
+\begin{quote}
+    Combatti solo le guerre che puoi vincere\dots preparati per le guerre che devi combattere --- Della guerra, Carl Von Clausewitz
+\end{quote}
+
+\paragraph*{Esercizio 2.2}
+\begin{quote}
+    L'arte della guerra ci insegna a confidare non soltanto nella probabilità\footnote{le vocali accentate e gli apostrofi sono stati aggiunti per completezza.} che il nemico non si presenti, ma sulla nostra preparazione a riceverlo; non soltanto sulla possibilità che non attacchi, ma piuttosto sull'avere reso le nostre posizioni imprendibili --- L'arte della guerra, Sun Tzu
+\end{quote}
+
+\paragraph*{Esercizio 2.3}
+Osservando le sequenze di caratteri ripetuti (come \emph{PJ} e \emph{KAN I}) si determina che la chiave ha lunghezza 6.
+In un secondo momento, si procede l'analisi e si può ricavare che la chiave è \textbf{Scozia}, da cui:
+\begin{quote}
+    Non essere il primo a provare le cose nuove e tantomeno l’ultimo a mettere da parte quelle vecchie --- Antico proverbio scozzese
+\end{quote}
+
+\paragraph*{Esercizio 2.4}
+\subparagraph*{.1}
+A deve essere una matrice quadrata invertibile: quindi $A \in Z^{2 \times 2}_{4}$ e $\det(A) \neq 0$.
+
+\subparagraph*{.2}
+Si divide il messaggio in 6 blocchi $m_i$ da 2 elementi e si applica il prodotto $c_i = A^T \cdot m_i (\mod 4)$ da cui $c = (c_1, \dots, c_6) = (013301303301)^T$.
+Per ottenere $m$ da $c$ si calcolano i blocchi $m_i = (A^{-1})^T \cdot c_i (\mod 4)$, da cui $m = (m_1, \dots, m_6) = (100110110110)^T$.
