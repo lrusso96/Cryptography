@@ -33,6 +33,23 @@ Let $\Pi_1 = (\KGen_1, \Enc_1, \Dec_1)$ and $\Pi_2 = (\KGen_2, \Enc_2, \Dec_2)$ 
 }
 
 \section{ID scheme based on RSA}
-\todo{Add exercise}
+
+Consider the following ID scheme $\Pi = (\KGen, \Prover, \Verifier)$.
+
+\begin{itemize}
+    \item The key generation algorithm first computes parameters $(N, e, d)$ as in the RSA cryptosystem. In particular, $N = p \cdot q$ for sufficiently large primes $p, q$, and $e \cdot d \equiv 1 \mod (p - 1)(q - 1)$ with $e$ a prime number. Hence, it picks $x \samples \Zset_N^*$, computes $y = x^e \mod N$, and it returns $\pk = (N, e, y)$ and $\sk = x$.
+    \item One execution of the ID scheme goes as follows:
+          \begin{description}
+              \item[(1)] The prover $\Prover$ picks $a \samples \Zset_N^*$, and  sends $\alpha = a^e \mod N$ to $\Verifier$;
+              \item[(2)] The verifier $\Verifier$ forwards a random challenge $\beta \samples \Zset_e$ to $\Prover$;
+              \item[(3)] The prover $\Prover$ replies with $\gamma = x^\beta \cdot a \mod N$, where $x$ is taken from the secret key and $a$ is the same value sampled in the first round.
+          \end{description}
+    \item The verifier $\Verifier$ accepts a transcript $\tau = (\alpha, \beta, \gamma)$ if and only if \[\gamma^e \cdot y^{-\beta} = \alpha \mod N.\]
+\end{itemize}
+
+Prove that $\Pi$ is a canonical ID scheme satisfying completeness, special soundness and honest-verifier zero knowledge under the RSA assumption.
+
+\solution{
+}
 
 \end{document}
