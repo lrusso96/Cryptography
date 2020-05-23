@@ -1,0 +1,38 @@
+\input{exam}
+
+\begin{document}
+\exam{May 5, 2020}
+
+\section{A PRG Candidate}
+
+Let $f: \bits \to \bits$ be a one-way permutation, and $G: \bits \to \bits[\secpar + l]$ be a pseudorandom generator with positive stretch (i.e., $l \ge 1$). Analyze the following derived construction of a pseudorandom generator $G'_f : \bits \to \bits[2\secpar + l]$, where $G'(s) := (f(s), G(s))$.
+
+In case you think the derived construction is not secure, exhibit a concrete attack; otherwise, provide a proof of security.
+
+\solution{
+
+    $G'$ is not secure for any possible instantiation. Indeed, assume $G$ be constructed from the OWP $f$, by using as hardcore predicate Goldreich-Levin $l$ times.
+
+    Namely, let $G(s) = h(f(s)) || h(f(f(s))) || \dots || h(f(\dots(f(s)))) || f(\dots(f(s)))$, where $h$ is the Goldreich-Levin hard-core predicate for $f$. In this case we can easily break the security of $G'$, since we are given both $G(s)$ and $f(s)$.
+}
+
+\section{PKE Combiners}
+
+Let $\Pi_1 = (\KGen_1, \Enc_1, \Dec_1)$ and $\Pi_2 = (\KGen_2, \Enc_2, \Dec_2)$ be two PKE schemes with the same message space $\MsgSpace = \bits[n]$. You know that at least one of the two PKE schemes is secure, but you don't know which one. Show how to combine $\Pi_1$ and $\Pi_2$ into a PKE scheme $\Pi = (\KGen, \Enc, \Dec)$, with message space $\MsgSpace$, such that $\Pi$ satisfies $\indCPA$ security as long as at least one of $\Pi$ and $\Pi_2$ satisfies $\indCPA$ security.
+
+\solution{
+
+    Let $\Pi = (\KGen, \Enc, \Dec)$ be the following:
+    \begin{description}
+        \item[$\KGen$]: $\pk = (\pk_1, \pk_2), sk = (\sk_1, \sk_2)$, where $(\pk_i, sk_i) \samples \KGen_i$
+        \item[$\Enc(pk, m)$]: $ \Enc_1(pk_1, (m \xor r)), \Enc_2(pk_2, r)$ for some $r \samples \MsgSpace$
+        \item[$\Dec(sk, (c_1, c_2))$]: $\Dec_1(sk_1, c_1) \xor \Dec_2(sk_2, c_2)$
+    \end{description}
+
+    \todo{Add reduction}
+}
+
+\section{ID scheme based on RSA}
+\todo{Add exercise}
+
+\end{document}

@@ -1,0 +1,67 @@
+\documentclass[twoside]{article}
+\usepackage
+[pdftex,pagebackref,letterpaper=true,colorlinks=true,pdfpagemode=none,urlcolor=blue,linkcolor=blue,citecolor=blue,pdfstartview=FitH]{hyperref}
+
+\usepackage{amsmath,amsfonts}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{todonotes}
+\usepackage[secpar = \lambda]{lelu}
+
+\bibliographystyle{alpha}
+
+\setlength{\oddsidemargin}{0pt}
+\setlength{\evensidemargin}{0pt}
+\setlength{\textwidth}{6.0in}
+\setlength{\topmargin}{0in}
+\setlength{\textheight}{8.5in}
+
+\setlength{\parindent}{0in}
+\setlength{\parskip}{5px}
+
+
+% Typesetting shortcuts
+\def\xor{\oplus}
+\def\and{\wedge}
+\def\MsgSpace{\mathcal{M}}
+\def\cSpace{\mathcal{C}}
+
+\newenvironment{solution}{\noindent {\sc \underline{\textbf{SOLUTION}}}}{$\Box$ \medskip}
+
+% To typeset the header
+
+\def\courseprof{Daniele Venturi}
+\def\coursenum{1047622}
+\def\coursename{Cryptography}
+\def\author{Luigi Russo, 1699981}
+
+\newlength{\tpush}
+\setlength{\tpush}{2\headheight}
+\addtolength{\tpush}{\headsep}
+
+\newcommand{\handout}[2]{
+    \noindent\vspace*{-\tpush}\newline\parbox{\textwidth}{
+        \textbf{\coursenum : \coursename} \hfill #1 \newline
+        by prof. \courseprof \newline
+        \mbox{}\hrulefill\mbox{}}
+    \vspace*{1ex}\mbox{}\newline
+    \bigskip
+
+    \begin{center}{\Large\bf  #2}\end{center}
+    \begin{center}
+        solutions by \author
+    \end{center}
+    \bigskip
+}
+
+\newcommand{\exam}[1]{
+    \handout{#1}{Exam #1}
+    \pagestyle{myheadings}
+    \thispagestyle{plain}
+    \markboth{#1}{\coursename}
+}
+
+\setlength{\marginparwidth}{3cm}

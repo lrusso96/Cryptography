@@ -1,0 +1,77 @@
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{lelu}[2020/03/19 Lelu Package]
+
+\RequirePackage{amsfonts}
+\RequirePackage{amstext}
+\RequirePackage{kvoptions}
+
+\DeclareStringOption[\lambda]{secpar}
+
+\ProcessKeyvalOptions*
+
+\newcommand{\secpar}{\lelu@secpar}
+
+% styles
+\newcommand{\neglstyle}[1]{\mathrm{#1}}
+\newcommand{\polystyle}[1]{\mathrm{#1}}
+\newcommand{\advstyle}[1]{\mathcal{#1}}
+\newcommand{\notionstyle}[1]{\ensuremath{\mathrm{#1}}}
+\newcommand{\algstyle}[1]{\ensuremath{\mathsf{#1}}}
+\newcommand{\keystyle}[1]{\ensuremath{\mathsf{#1}}}
+
+% security parameter 1^n
+\newcommand{\secparam}{1^\secpar}
+
+% computational and statistical distance
+\newcommand{\xclose}[1]{\approx_{#1}}
+\newcommand{\cclose}{\xclose c}
+\newcommand{\sclose}{\xclose s}
+
+% sample at random
+\newcommand{\samples}{\leftarrow_\$}
+
+% negligible
+\newcommand{\negl}[1][\secpar]{
+  \neglstyle{negl}({#1})}
+
+% poly
+\newcommand{\poly}[1][\secpar]{
+  \polystyle{poly}({#1})}
+
+% set and bits
+\newcommand{\set}[3][\secpar]{{\{#2, #3\}^{#1}}}
+\newcommand{\bits}[1][\secpar]{\set[#1]{0}{1}}
+
+% numerical sets
+\newcommand{\numset}[1]{\mathbb #1}
+\newcommand{\Nset}{\numset N}
+\newcommand{\Zset}{\numset Z}
+
+% adversaries
+\newcommand{\adv}[1][A]{\advstyle{#1}}
+
+% Landau
+\newcommand{\bigO}[1]{\mathcal{O}(#1)}
+\newcommand{\bigTheta}[1]{\Theta(#1)}
+\newcommand{\bigOmega}[1]{\Omega(#1)}
+
+% Basic crypto notions
+\newcommand{\notion}[2]{\notionstyle{#1 {\text -}#2}}
+\newcommand{\indNotion}[1]{\notion{IND}{#1}}
+\newcommand{\indCPA}{\indNotion{CPA}}
+\newcommand{\indCCA}{\indNotion{CCA}}
+
+% Algorithms
+\newcommand{\algX}[1]{\algstyle{#1}}
+\newcommand{\KGen}{\algX{KGen}}
+\newcommand{\Enc}{\algX{Enc}}
+\newcommand{\Dec}{\algX{Dec}}
+\newcommand{\Sign}{\algX{Sign}}
+\newcommand{\Vrfy}{\algX{Vrfy}}
+
+% Keys
+\newcommand{\keyX}[1]{\keystyle{#1}}
+\newcommand{\pk}{\keyX{pk}}
+\newcommand{\sk}{\keyX{sk}}
+\newcommand{\vk}{\keyX{vk}}
+\endinput
