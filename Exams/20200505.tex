@@ -23,13 +23,22 @@ Let $\Pi_1 = (\KGen_1, \Enc_1, \Dec_1)$ and $\Pi_2 = (\KGen_2, \Enc_2, \Dec_2)$ 
 \solution{
 
     Let $\Pi = (\KGen, \Enc, \Dec)$ be the following:
-    \begin{description}
-        \item[$\KGen$]: $\pk = (\pk_1, \pk_2), sk = (\sk_1, \sk_2)$, where $(\pk_i, sk_i) \samples \KGen_i$
-        \item[$\Enc(pk, m)$]: $ \Enc_1(pk_1, (m \xor r)), \Enc_2(pk_2, r)$ for some $r \samples \MsgSpace$
-        \item[$\Dec(sk, (c_1, c_2))$]: $\Dec_1(sk_1, c_1) \xor \Dec_2(sk_2, c_2)$
-    \end{description}
+    \begin{itemize}
+        \item $\KGen$: it returns $(pk, sk)$, with $\pk = (\pk_1, \pk_2)$, $sk = (\sk_1, \sk_2)$, where $(\pk_i, sk_i) \samples \KGen_i$
+        \item $\Enc(pk, m)$: returns $(c_1, c_2)$, where $c_1= \Enc_1(pk_1, (m \xor r))$ and $c_2 = \Enc_2(pk_2, r)$ for $r \samples \MsgSpace$.
+        \item $\Dec(sk, (c_1, c_2))$: it returns $\Dec_1(sk_1, c_1) \xor \Dec_2(sk_2, c_2)$
+    \end{itemize}
 
-    \todo{Add reduction}
+    Let assume $\Pi_i$ is $\indCPA$ secure. If $\Pi$ is not, then there exists a valid PPT adversary $\adv$ that we can use as follows to build a PPT attacker $\adv_i$ to $\Pi_i$:
+
+    \begin{itemize}
+        \item $\adv_i$ generates $(\pk_{3-i}, \sk_{3-i}) \samples \KGen_{3-i}(\secparam)$
+        \item $\adv_i$ receives $(\pk_i)$ from the challenger and forwards to $\adv$ the new public key $\pk = (\pk_1, \pk_2)$
+        \item $\adv$ produces the challenge $(m_0, m_1)$. $\adv_i$ samples $r \samples \MsgSpace$ and forwards to the challenger the new pair $(m_0 \xor r, m_1 \xor r)$
+        \item the challenger chooses at random a bit $b$ and encrypts $m_b$, thus producing the ciphertext $c_b^*$
+        \item $\adv_i$ gives $\adv$ the new ciphertext $(c_1, c_2)$, where $c_i = c_b^*$ and $c_{3-i} \samples \Enc_{3-i}(pk_{3-i}, r)$
+        \item $\adv$ returns a bit $b'$, which is passed to the challenger
+    \end{itemize}
 }
 
 \section{ID scheme based on RSA}
@@ -50,6 +59,7 @@ Consider the following ID scheme $\Pi = (\KGen, \Prover, \Verifier)$.
 Prove that $\Pi$ is a canonical ID scheme satisfying completeness, special soundness and honest-verifier zero knowledge under the RSA assumption.
 
 \solution{
+    \todo[inline]{Prove completeness, special soundness and honest-verifier zero knowledge.}
 }
 
 \end{document}
