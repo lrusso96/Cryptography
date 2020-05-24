@@ -58,8 +58,21 @@ Consider the following ID scheme $\Pi = (\KGen, \Prover, \Verifier)$.
 
 Prove that $\Pi$ is a canonical ID scheme satisfying completeness, special soundness and honest-verifier zero knowledge under the RSA assumption.
 
+(\textbf{Hint:} To prove special soundness you can use the following fact: Given $N$, elements $u, v \in \Zset_N^*$ and integers $e, e'$ for which it holds that $gcd(|e|, |e'|) = 1$ and $u^e = v^{e'} \mod N$, an $e$-th root of $v$
+(modulo $N$) can be computed in polynomial time.)
+
 \solution{
-    \todo[inline]{Prove completeness, special soundness and honest-verifier zero knowledge.}
+
+    \begin{description}
+        \item[(completeness)] $\forall x, \tau$ we have that $\gamma^e \cdot y^{-\beta} = (x^\beta \cdot a)^e \cdot y^{-\beta} = a^e = \alpha$
+        \item[(special soundness)] Assume there exists $\adv$ able to produce two transcripts $\tau_1 = (\alpha, \beta_1, \gamma_1)$, $\tau_2 = (\alpha, \beta_2, \gamma_2)$. Then we have that $\gamma_1^e \cdot y^{-\beta_1} = \gamma_2^e \cdot y^{-\beta_2}$. We derive that $(\frac{\gamma_1}{\gamma_2})^e = y^{\beta_1 - \beta_2} \mod N$. We can compute\footnote{we use the hint} the $e$-th root of $y^{\beta_1 - \beta_2}$ that is equal to $x^{e\cdot(\beta_1 - \beta_2)} = x^{\beta_1 - \beta_2}$.
+        \item[honest-verifier zero knowledge] The simulator $\Simulator(pk)$ produces the transcript $\tau = (\alpha, \beta, \gamma)$ in the following way:
+              \begin{itemize}
+                  \item samples $\beta \samples \Zset_e$
+                  \item samples $\gamma \samples \Zset_N^*$
+                  \item computes $\alpha = \gamma^e \cdot y^{-\beta}$
+              \end{itemize}
+    \end{description}
 }
 
 \end{document}
