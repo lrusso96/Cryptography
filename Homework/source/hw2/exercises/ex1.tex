@@ -1,0 +1,64 @@
+\section{Hashing}
+\begin{enumerate}[(a)]
+	\item  Let $\mathcal{H} = \{H_s : \bits^{2n} \to \bits^n\}_{s\in\bits^\lambda}$ be a family of collision-resistant hash
+	functions compressing $2n$ bits into $n$ bits. Answer the following questions.
+	\begin{enumerate}[(i)]
+		\item Show that $\mathcal{H}$ is a seeded one-way function in the following sense: for all PPT adversaries $\texttt{A}$ there exists a negligible function $\nu: \N \to [0, 1]$ such that
+		\[\P[H_s(x') = y: s \leftarrow \bits^\lambda; x \leftarrow \bits^{2n}; y \leftarrow H_s(x); x' \leftarrow \texttt{A}(s,y)] \le \nu(n) \]
+
+	\begin{solution}
+		\begin{cryptoredux}
+			{1.a}
+			{Base an attack to CR $\mathcal{H}$ family, assuming the existence of a PPT attacker $\attacker$, able to win the seeded one-way function Game with non negligible probability.}
+			{}
+			{}
+			{}
+			\receive{\shortstack[l]{
+					$s \ud \bits^\lambda$
+			}}{$s$}{}
+			\cseqdelay
+			\invoke{\shortstack[l]{
+			$x \ud \bits^{2n}$ \\
+			$y = H_s(x)$	
+			}}{$(s, y)$}{}
+			\cseqdelay
+			\return{}{$x'$}{}
+			\send{}{$(x, x')$}{}
+		\end{cryptoredux}
+	Assume there exists a PPT attacker $\attacker$ that given a value $y = H_s(x)$, with $s\ud \bits^\lambda$ and $x\ud\bits^{2n}$, finds a pre-image $x': H_s(x) = H_s(x')$ with non negligible probability $\ge \frac{1}{p(n)}$ for some $p(n) \in poly(n)$. Then we can build on top of $\attacker$ an attacker $\newattacker$ able to break the collision resistance of $\mathcal{H}$.
+
+	In particular, the challenger selects and fixes a seed $s$; $\newattacker$ fixes a value $x$ and forwards to $\attacker$ the value $y = H_s(x)$; $\attacker$ returns a value $x'$ and the tuple $(x, x')$ is forwarded to the challenger: the game is won if $x \ne x'$ and $H_s(x) = H_s(x')$. Now, by construction, we know that $\attacker$ "inverts"\footnote{with some abuse, we mean that it finds a valid preimage of y.} $y$ with probability $\ge \frac{1}{p(n)}$. We also know that the domain of $\mathcal{H}$ is the set of $2n-$bit strings, while its co-domain is the set of $n-$bit strings: this implies that the expected value of elements $x: H_s(x) = y$, once we fix $y$ and $s$, is $2^n$, thus implying that the probability for the attacker $\attacker$ to output a value $x'$ equal to $x$ is only negligible ($= 2^{-n}$). These two considerations allow to conclude that $\newattacker$ outputs a valid and colliding pair $(x, x')$ with probability $\ge \frac{1}{p(n)} (1 - 2^{-n}) \in poly(n)$.
+	\end{solution}
+
+	\item What happens in case the set of functions $\mathcal{H}$ is not compressing (i.e., the domain of each function $H_s$ is also $\bits^n$? Does collision resistance imply one-wayness in this case?
+	
+	\begin{solution}
+		Consider $H_s(x) \deq x \xor \texttt{pad}(s)$, where $\texttt{pad}: \bits^\lambda \to \bits^n$ is public padding function\footnote{e.g. $\texttt{pad}(s) \deq s||0^{n-\lambda}$.}. Then it is easy to see that $\mathcal{H}$ is collision resistant, since there is no collision at all (for each $s$, $H_s(\cdot)$ defines a permutation). By the way, this family of functions is definitely not one way; it is easily invertible, since the seed $s$ is public in the game, i.e. it is known to the adversary too: indeed, given $y = H_s(x) = \texttt{pad}(s) \xor x$, the attacker outputs $\mathcal{A}(s, y) = y \xor \texttt{pad}(s) = \texttt{pad}(s) \xor \texttt{pad}(s) \xor x = x$.
+	\end{solution}
+	\end{enumerate}
+
+	\item Let $\mathcal{H} = \{H_s: \bits^{4n} \to \bits^{2n}\}_{s \in \bits^\lambda}$ and  $\mathcal{H}' = \{H'_s: \bits^{2n} \to \bits^{n}\}_{s \in \bits^\lambda}$ be families of collision-resistant hash functions. Analyse the following candidate hash function family compressing $4n$ bits into $n$ bits: $\mathcal{H}^* \deq \{H^*_{s_1,s_2}: \bits^{4n} \to \bits^n\}_{s_1, s_2 \in \bits^\lambda}$ such that $H^*_{s_1, s_2}(x) = H'_{s_2}(H_{s_1}(x))$ for $s_1, s_2 \ud \bits^\lambda$.
+	
+	\begin{solution}
+		\begin{cryptoredux}
+			{1.b}
+			{Base an attack to CR $\mathcal{H}'$ family on top of an attacker $\attacker$ to the collision resistance of $\mathcal{H}^*$.}
+			{}
+			{}
+			{}
+			\receive{\shortstack[l]{
+					$s_2 \ud \bits^\lambda$
+			}}{$s_2$}{}			
+			\cseqdelay
+			\invoke{\shortstack[l]{
+					$s_1 \ud \bits^\lambda$	
+			}}{$(s_1, s_2)$}{}
+			\cseqdelay
+			\return{}{$(x, x')$}{}
+			\send{}{$(H_{s_1}(x), (H_{s_1}(x'))$}{}
+		\end{cryptoredux}
+	Let assume that $\mathcal{H}^*$ is not collision resistant: this means that, by definition, there exists some PPT attacker $\attacker$ that, given two values as seed $s_1, s_2$, is able to find, with non negligible probability, a valid pair $(x, x')$ such that $H_{s_1, s_2}^*(x) = H_{s_1, s_2}^*(x')$, with $x \ne x', x, x' \in \bits^{4n}$. If this is the case we can try to build an attacker $\newattacker$ to break the collision resistance of $\mathcal{H}'$. Note that the challenger fixes a seed $s_2$ and waits for the attacker to find a collision; $\newattacker$ randomly selects and fixes a seed $s_1 \in \bits^\lambda$ and uses $\attacker$ in order to find a pair $(x, x')$. By assumption, this pair is such that $H^*_{s_1, s_2}(x) = H^*_{s_1, s_2}(x')$ with non negligible probability $\ge \frac{1}{p(n)}$, for some $p(n) \in poly(n)$.
+
+	But if $\mathcal{A}$ is successful (i.e. $H^*_{s_1, s_2}(x) = H^*_{s_1, s_2}(x')$), either (i) $H_{s_1}(x) = H_{s_1}(x')$ or (ii) $H_{s_1}(x) \ne H_{s_1}(x')$. Case (i) can happen only with negligible probability $\epsilon(n)$, otherwise we could use $\attacker$ to build a PPT attacker to break the collision resistance of $\mathcal{H}$. Instead case (ii) guarantees that the pair is valid to build a successful attack to $\mathcal{H}'$: in both situations we come to an absurd given our initial assumptions.
+	\end{solution}
+\end{enumerate}

@@ -1,0 +1,309 @@
+\ProvidesPackage{notation}[Crypto Notation]
+
+% Required for crypto games
+\RequirePackage{tikz}
+\usetikzlibrary{arrows,shadows} % shadows for the entities, arrows for the messages
+\RequirePackage{xparse} % Improved macro/environment definition commands
+
+% Cryptography
+%
+% Evaluate UAR [math mode]
+\newcommand{\pickUAR}{\mathrel{{\leftarrow}\vcenter{\hbox{\scriptsize\rmfamily\upshape\!\!\textsf{\$}}}}}
+% Default challenger
+\newcommand{\challenger}{\textsf{C}}
+% Default adversary
+\newcommand{\adversary}{\textsf{A}}
+% Default distinguisher
+\newcommand{\distinguisher}{\textsf{D}}
+% Cryptogame [math mode]
+\NewDocumentCommand{\cryptog}{m O{\Pi} O{\adversary}}{\textsc{Game}^{\textsc{#1}}_{#2, #3}}
+% Hybrid game [math mode]
+\NewDocumentCommand{\hybridg}{m O{\Pi} O{\adversary}}{\textsc{Hyb}^{\textsc{#1}}_{#2, #3}}
+
+% Acronyms
+%
+% Independent and Identically Distributed
+\newcommand{\iid}{\textsc{iid}}
+% Uniformly At Random
+\newcommand{\uar}{\textsc{uar}}
+% Probabilistic Polynomial Time
+\newcommand{\ppt}{\textsc{ppt}}
+
+% Secret Key Encryption
+\newcommand{\ske}{\textsc{ske}}
+% Public Key Encryption
+\newcommand{\pke}{\textsc{pke}}
+% Message Authentication Code
+\newcommand{\mac}{\textsc{mac}}
+
+% One-Way Function
+\newcommand{\owf}{\textsc{owf}}
+% One-Way Permutation
+\newcommand{\owp}{\textsc{owp}}
+% PseudoRandom Generator
+\newcommand{\prg}{\textsc{prg}}
+% PseudoRandom Function
+\newcommand{\prf}{\textsc{prf}}
+% PseudoRandom Permutation
+\newcommand{\prp}{\textsc{prp}}
+% TrapDoor Permutation
+\newcommand{\tdp}{\textsc{tdp}}
+
+% Chosen Plaintext Attack
+\newcommand{\cpa}{\textsc{cpa}}
+% Chosen Ciphertext Attack
+\newcommand{\cca}{\textsc{cca}}
+% Universally unForgeable from Chosen Message Attack
+\newcommand{\ufcma}{\textsc{ufcma}}
+
+% Discrete Logarithm assumption
+\newcommand{\dl}{\textsc{dl}}
+% Decisional Diffie-Hellman assumption
+\newcommand{\ddh}{\textsc{ddh}}
+% Computational Diffie-Hellman assumption
+\newcommand{\cdh}{\textsc{cdh}}
+
+% Goldreich-Goldwasser-Micali construct
+\newcommand{\ggm}{\textsc{ggm}}
+
+% Function classes and relations
+%
+% Computational indistinguishability
+\newcommand{\compindist}{\approx_\textsc{c}}
+% Statistical indistinguishability
+\newcommand{\statindist}{\approx_\textsc{s}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+% Cryptosequences
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Define counters
+\newcounter{preinstance}
+\newcounter{instancecount}
+\newcounter{sequencecursor}
+\newcounter{intransientfigure}
+\setcounter{intransientfigure}{0}
+\newcounter{looplabel}
+
+\newcommand{\cseqcraftfloat}{
+    \ifnum\@floatpenalty<0\relax
+    \else
+        \setcounter{intransientfigure}{1}
+        \begin{figure}[htbp]
+        \centering
+    \fi
+}
+
+% Styles
+\tikzstyle{msgstyle}=[->, >=angle 60]
+\tikzstyle{inststyle}=[rectangle, draw, anchor=west, minimum height=0.8cm, minimum width=1.6cm, fill=white, drop shadow={opacity=1,fill=black}]
+
+% Internal commands
+%
+% Diagram spacing
+\newcommand{\cseqdelay}{\stepcounter{sequencecursor}}
+
+% Message: from, fromtext, msgtext, to, totext
+\newcommand{\cseqmessager}[5]{
+    \stepcounter{sequencecursor}
+    \path (#1)+(0, -\thesequencecursor*\unitfactor-0.7*\unitfactor) 
+        node (tail) {} node [anchor = east] {#2};
+    \path (#4)+(0, -\thesequencecursor*\unitfactor-0.7*\unitfactor)
+        node (head) {} node [anchor = west] {#5};
+    \draw [msgstyle] (tail) -- (head)
+        node [midway, above] {#3};
+}
+
+% Message: from, fromtext, msgtext, to, totext
+\newcommand{\cseqmessagel}[5]{
+    \stepcounter{sequencecursor}
+    \path (#1)+(0, -\thesequencecursor*\unitfactor-0.7*\unitfactor) 
+        node (tail) {} node [anchor = west] {#2};
+    \path (#4)+(0, -\thesequencecursor*\unitfactor-0.7*\unitfactor)
+        node (head) {} node [anchor = east] {#5};
+    \draw [msgstyle] (tail) -- (head)
+        node [midway, above] {#3};
+}
+
+% New participant
+% \cseqentity[edge distance]{var}{name:class}
+\newcommand{\cseqentity}[3][0]{
+    \stepcounter{instancecount}
+    \path (inst\thepreinstance.east)+(#1,0)
+        node[inststyle] (inst\theinstancecount) {#3};
+    \path (inst\theinstancecount)+(0,-0.5*\unitfactor)
+        node (#2) {};
+    \tikzstyle{instcolor#2}=[]
+    \stepcounter{preinstance}
+}
+
+% Entity computation
+\newcommand{\cseqcompute}[3]{
+    \stepcounter{sequencecursor}
+    \path (#1)+(0,-\thesequencecursor*\unitfactor-0.7*\unitfactor)
+        node [anchor = #3] {#2};
+}
+
+
+% API Commands
+%
+% Challenger computation
+\newcommand{\cseqchallenger}[1]{
+    \cseqcompute{C}{#1}{west};
+}
+% Adversary computation - optional orientation as first argument: [east|west]
+\newcommand{\cseqadversary}[2][east]{
+    \cseqcompute{A}{#2}{#1};
+}
+% Distinguisher computation
+\newcommand{\cseqdistinguisher}[1]{
+    \cseqcompute{D}{#1}{east};
+}
+
+
+% Message from adversary to challenger
+\newcommand{\send}[3]{
+    \cseqmessager{A}{#1}{#2}{C}{#3}
+}
+% Message from challenger to adversary
+\newcommand{\receive}[3]{
+    \cseqmessagel{C}{#1}{#2}{A}{#3}
+}
+% Message from adversary to distinguisher - cryptoredux only
+\newcommand{\invoke}[3]{
+    \cseqmessagel{A}{#1}{#2}{D}{#3}
+}
+% Message from distinguisher to adversary - cryptoredux only
+\newcommand{\return}[3]{
+    \cseqmessager{D}{#1}{#2}{A}{#3}
+}
+
+
+% Arguments: Identifier (used as label) | description | challengername
+\NewDocumentEnvironment{cryptogame}{m m  O{$\mathcal{A}$}  O{$\mathcal{C}$} O{2.2}}
+{ % Crypto-game BEGIN
+
+    \cseqcraftfloat
+
+    \begin{tikzpicture}
+
+        % Set unit measurements
+        \setlength{\unitlength}{1cm}
+        \def\unitfactor{0.6}
+
+        % Set counters
+        \setcounter{preinstance}{0}
+        \setcounter{instancecount}{0}
+        \setcounter{sequencecursor}{0}
+        \node[coordinate] (inst0) {};
+        
+        % Loop macros
+        \newcommand{\cseqbeginloop}{
+            \ifnum\thelooplabel=0
+            \setcounter{looplabel}{\thesequencecursor}
+            \stepcounter{looplabel}
+            \else \PackageError{notation}{Attempting to nest loops in a cryptosequence. Close the former loop first}
+            \fi
+        }
+
+        \newcommand{\cseqendloop}{
+            \ifnum\thelooplabel=0
+                \PackageError{notation}{No loop to close here}
+            \fi
+            \ifnum\thelooplabel>\thesequencecursor\relax
+                \PackageError{notation}{Closing an empty loop}
+            \fi
+            \draw[->](A)+(-0.2, -0.15-\thesequencecursor*\unitfactor-0.7*\unitfactor)
+            .. controls +(-0.6, -1.3)
+            and         +(-0.6, +1.3)
+            ..          +(-0.2, 0.15-\thelooplabel*\unitfactor-0.7*\unitfactor);
+            \setcounter{looplabel}{0}
+        }
+
+        % Add the game's participants
+        \cseqentity{A}{#3}
+        \cseqentity[#5]{C}{#4}
+
+}
+{ % Crypto-game END
+
+        \ifnum\value{instancecount}>0
+            \foreach \t [evaluate=\t] in {1,...,\theinstancecount}{
+                \draw[dotted] (inst\t) -- ++(0,-\thesequencecursor*\unitfactor-2.2*\unitfactor);
+            }
+        \fi
+    \end{tikzpicture}
+
+    \ifnum\value{intransientfigure}=1
+        \caption{#2}
+        \label{cryptogame:#1}
+        \end{figure}
+        \setcounter{intransientfigure}{0}
+    \fi
+}
+
+
+
+% Arguments: Identifier (used as label) | description | hp attacker | custom attacker | challengername
+\NewDocumentEnvironment{cryptoredux}{m m O{$\mathcal{A}$} O{$\mathcal{A}^*$}  O{$\mathcal{C}$} O{2.2}}
+{ % Crypto-game BEGIN
+
+    \cseqcraftfloat
+
+    \begin{tikzpicture}
+
+        % Set unit measurements
+        \setlength{\unitlength}{1cm}
+        \def\unitfactor{0.6}
+
+        % Set counters
+        \setcounter{preinstance}{0}
+        \setcounter{instancecount}{0}
+        \setcounter{sequencecursor}{0}
+        \node[coordinate] (inst0) {};
+        
+        % Loop macros
+        \newcommand{\cseqbeginloop}{
+            \ifnum\thelooplabel=0
+            \setcounter{looplabel}{\thesequencecursor}
+            \stepcounter{looplabel}
+            \else \PackageError{notation}{Attempting to nest loops in a cryptosequence. Close the former loop first}
+            \fi
+        }
+
+        \newcommand{\cseqendloop}{
+            \ifnum\thelooplabel=0
+                \PackageError{notation}{No loop to close here}
+            \fi
+            \ifnum\thelooplabel>\thesequencecursor\relax
+                \PackageError{notation}{Closing an empty loop}
+            \fi
+            \draw[->](D)+(-0.2, -0.15-\thesequencecursor*\unitfactor-0.7*\unitfactor)
+            .. controls +(-0.6, -1.3)
+            and         +(-0.6, +1.3)
+            ..          +(-0.2, 0.15-\thelooplabel*\unitfactor-0.7*\unitfactor);
+            \setcounter{looplabel}{0}
+        }
+
+        % Add the reduction's participants
+        \cseqentity{D}{#3}
+        \cseqentity[#6]{A}{#4}
+        \cseqentity[#6]{C}{#5}
+
+}
+{ % Crypto-game END
+
+        \ifnum\value{instancecount}>0
+            \foreach \t [evaluate=\t] in {1,...,\theinstancecount}{
+                \draw[dotted] (inst\t) -- ++(0,-\thesequencecursor*\unitfactor-2.2*\unitfactor);
+            }
+        \fi
+    \end{tikzpicture}
+    
+    \ifnum\value{intransientfigure}=1
+        \caption{#2}
+        \label{cryptoredux:#1}
+        \end{figure}
+        \setcounter{intransientfigure}{0}
+    \fi
+}

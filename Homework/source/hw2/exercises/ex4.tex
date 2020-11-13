@@ -1,0 +1,42 @@
+\section{Signature Schemes}
+\begin{enumerate}[(a)]
+	\item Consider a weaker variant of UF-CMA in which the attacker receives $(pk, m^*)$ at the beginning of the experiment, where the message $m^*$ is uniformly random over $\Z^*_\N$, and thus it has to forge on $m^*$ after possibly seeing polynomially-many signatures $\sigma_i$	on uniformly random messages $m_i \ud \Z^*_N$ chosen by the challenger. Call this notion random-message unforgeability under random-message attacks (RUF-RMA).
+
+	Formalize the above security notion, and prove that UF-CMA implies RUF-RMA but not viceversa.
+	
+	\begin{solution}
+		Given a signature scheme $\Pi \deq (\kgen, \sign, \vrfy)$, let consider the following game $\game_{\Pi, \mathcal{A}}^{\texttt{RUF-RMA}}(\lambda)$:
+		\begin{enumerate}
+			\item the challenger $\challenger$ generates $(pk, sk) \ud \kgen(1^\lambda)$
+			\item the challenger $\challenger$ fixes a message $m^* \ud \Z^*_\N$ and forwards to $\attacker$ both the publick key $pk$ and the message $m^*$
+			\item $\attacker$ has access to oracle $O_1(sk)$: this oracle samples a message $m_i \ud \Z_\N^*$ and returns $(m_i, \sigma_i)$ such that $\vrfy(pk, (m_i, \sigma_i)) = 1$
+			\item $\attacker$ forges the signature $\sigma^*$
+			\item the output of the game is $\vrfy(pk, (m^*, \sigma^*))$ (i.e. 1 in case of win, 0 otherwise)
+		\end{enumerate}
+		We say that a scheme $\Pi$ is RUF-RMA-secure if $\forall$ PPT attackers $\mathcal{A}, \exists \epsilon(\lambda) \in negl(\lambda)$:
+		\[\P[\game_{\Pi, \mathcal{A}}^{\texttt{RUF-RMA}}(\lambda) = 1] \le \epsilon(\lambda) \]
+
+		\bigskip
+		\textbf{(UF-CMA $\Rightarrow$ RUF-RMA)} Assume that a scheme $\Pi \deq (\kgen, \sign, \vrfy)$ is not RUF-RMA: then there exists a PPT attacker $\attacker$ able to forge, with non negligible probability, a valid signature $\sigma^*$ for the message $m^*$ fixed by the challenger. If this is true, we can build on top of $\attacker$ an attacker $\newattacker$ able to forge a valid pair and break UF-CMA-security too.
+		
+		First of all, in this reduction, $\newattacker$ forwards to $\attacker$ all the public parameters. Moreover, it randomly selects a message $m^*$ and relays this to $\attacker$: $m^*$ simulates the random challenge. At this point, the attacker $\attacker$ can start querying the oracle $O_1$; but $\newattacker$ can simulate very easily these queries, simply picking a message at random $m_i \ud \Z_\N^*$ and asking the challenger $\challenger$ to forge a valid signature $\sigma_i$: the pair $(m_i, \sigma_i)$ is then forwarded to $\attacker$. After potentially a polynomial number of these oracle calls, $\attacker$ is ready to forge a signature $\sigma^*$ and $\newattacker$ forwards to $\challenger$ the pair $(m^*, \sigma^*)$, retaining the same non-negligible advantage.
+
+		\bigskip
+		\textbf{(RUF-RMA $\not\Rightarrow$ UF-CMA)}
+		The textbook version of RSA signatures is RUF-RMA (see next exercise), however it is not UF-CMA as proved in class.
+	\end{solution}
+	
+	\item Recall the textbook-version of RSA signatures.
+	
+	$\kgen(1^\lambda)$: Run $(N, e, d) \ud \texttt{GenModulus}(1^\lambda)$, and let $pk = (e, N)$ and $sk = (N, d)$.
+
+	$\texttt{Sign}(sk, m)$: Output $\sigma = m^d \modop  N$.
+
+	$\vrfy(pk, m, \sigma)$: Output 1 if and only if $\sigma^e \equiv m \modop  N$.
+
+	Prove that the above signature scheme $\Pi = (\kgen, \texttt{Sign}, \vrfy)$ satisfies RUF-RMA under the RSA assumption.
+	
+	\begin{solution}
+		Assume not: then there exists a PPT attacker $\attacker$ (against RUF-RMA of $\Pi$), on top of which we can break RSA assumption. In particular, the challenger generates RSA params $(N, e, d)$ and fixes, at random, a value $x \ud \Z_\N^*$ and computes $y = x^e$. The attacker $\newattacker$ forwards the public key $(N, e)$ to $\attacker$; moreover it fixes $m^* = y$. In order to simulate the calls to oracle $O_1$ it can do the following: generates a signature $\sigma_i \ud \Z_N^*$ and then computes the message $m_i = \sigma_i^e$ and returns the pair $(m_i, \sigma_i)$. Note that such a pair is valid (because $\sigma_i^e = m_i$ by definition, and since $\sigma_i$ is chosen at random, also $m_i$ looks random\footnote{this is crucial, otherwise it would not be a valid simulation.}). We know that $\attacker$ forges a valid pair $(y, \sigma^*)$ with non negligible probability, such that $\sigma^*: {\sigma^*}^e = y \Rightarrow \sigma^* = x$. This concludes the proof.
+	\end{solution}
+\end{enumerate}

@@ -1,0 +1,39 @@
+\section{Actively Secure ID Schemes}
+Let $\Pi = (\kgen, \prover, \verifier)$ be an ID scheme. Informally, an ID scheme is actively secure if no efficient adversary $\attacker$ (given just the public key $pk$) can make $\verifier$ accept, even after $\attacker$ participates maliciously in poly-many interactions with $\prover$ (where the prover is given both the public key $pk$ and the secret key $sk$). More formally, we say that $\Pi$ satisfies active security if for all PPT adversaries $\attacker$ there is a negligible function $\nu: \N \in \bits$ such that:
+\[\P[\game_{\Pi, \attacker}^\texttt{mal-id}(\lambda) = 1] \le \nu(\lambda),\]
+where the game $\game_{\Pi, \attacker}^\texttt{mal-id}(\lambda)$ is defined as follows:
+\begin{itemize}
+	\item The challenger runs $(pk, sk) \ud \kgen(1^\lambda)$, and returns $pk$ to $\attacker$.
+	\item Let $q(\lambda) \in poly(\lambda)$ be a polynomial. For each $i \in [q]$, the adversary can run the protocol $\Pi$ with the challenger (where the challenger plays the prover and the adversary plays the malicious verifier), obtaining transcripts $\tau_i \ud (\prover(pk, sk) \rightleftarrows \attacker(pk))$.
+	\item Finally, the adversary tries to impersonate the prover in an execution of the protocol with the challenger (where now the challenger plays the honest verifier), yielding a transcript $\tau^* \ud (\attacker(pk) \rightleftarrows \verifier(pk))$.
+	\item The game outputs $1$ if and only if the transcript $\tau^*$ is accepting, i.e. $\verifier(pk, \tau^*) = 1$.
+\end{itemize}
+Answer the following questions.
+\begin{enumerate}[(a)]
+	\item Prove that passive security is strictly weaker than active security. Namely, show that every ID scheme $\Pi$ that is actively secure is also passively secure, whereas there exists a (possibly contrived) ID scheme $\Pi_{bad}$ that is passively secure but not actively secure.
+	
+	\begin{solution}
+		\textbf{(active $\Rightarrow$ passive)} Assume not, then there exists some PPT attacker $\attacker$ that breaks the passive security of an actively secure scheme $\Pi$. If this is true, we can build a new PPT attacker $\newattacker$ that breaks the active security of $\Pi$. Indeed, when $\attacker$ asks to see some valid transcript $\tau_i$, prompting the empty string, $\newattacker$ will simply start a session of the protocol as an \textbf{honest}\footnote{must behave honestly, for each transcript requested by $\attacker$, in order to perfectly simulate the oracle.} verifier with the challenger acting as the (honest) prover. The final transcript $\tau_i$ is then forwarded to the original attacker: and this can be done up to a polynomial number of times of course. At this point, $\attacker$ impersonates a malicious prover (because it has not the secret key sk), directly interacting with the verifier ($\newattacker$, of course, forwards the messages of $\attacker$ to the challenger and then sends its replies back to $\attacker$). This allows $\newattacker$ to retain the same non negligible advantage of $\attacker$ since the reduction is tight.
+
+		\bigskip
+		\textbf{(passive $\not\Rightarrow$ active)} Consider a canonical $\Sigma$ protocol $\Pi$: we define a variant $\Pi'$ such that the verifier appends a bit $b$ to its (unique) message $\beta$ where $\P[b=0] = 2^{-\lambda}$; if $b = 0$ (this happens only with negligible probability in $\lambda$) the prover has to send the secret key $sk$; otherwise it follows the original protocol to compute $\gamma$\footnote{of course $\verifier'$ will check the last bit of $\beta$ and if it is equal to $1$, it will run $\verifier(\cdot)$.}. This clearly does not compromise the passive security of $\Pi'$, because the attacker should hope to see a transcript where the secret key is leaked, but this happens only with negligible probability since the verifier is honest (it is simulated by the challenger itself); on the contrary, this scheme is not actively secure, because the adversary is allowed to impersonate the verifier in the first part of its attack: then it can easily find out the secret key (needs only one query where it appends $b = 0$ to some $\beta$) and then it can act as a malicious prover and forge a valid transcript thanks to the leaked key.
+	\end{solution}
+
+	\item Let $\Pi' = (\kgen, \sign, \vrfy)$ be a signature scheme, with message space $\mathcal{M}$. Prove that if $\Pi'$ is UF-CMA, the following ID scheme $\Pi = (\kgen, \prover, \verifier)$ (based on $\Pi'$) achieves active security:
+	
+	$\prover(pk, sk) \rightleftarrows \verifier(pk)$: The verifier picks random $m \ud \mathcal{M}$, and forwards $m$ to the prover. The prover replies with $\sigma \ud \sign(sk, m)$, and finally the verifier accepts if and only if $\vrfy(pk, m, \sigma) = 1$.
+	
+	\begin{solution}
+		As always, assume not: then if there exists a PPT $\attacker$ able to break the active security of $\Pi$, we can build on top of it a new attacker $\newattacker$ to break the UF-CMA-security of $\Pi'$.	In our reduction, we first forward to the original attacker the public key $pk$ (and, of course, all the public parameters generated by $\challenger$).
+		
+		The attacker $\attacker$ is allowed in the first phase to interact as a (possibly malicious) verifier: it will start sending some message $m_i$, waiting for the prover to reply; $\newattacker$ will forward $m_i$ to the challenger in order to produce a valid $\sigma_i$ and then is ready to reply; this allows the attacker $\attacker$ to collect some transcript $\tau_i$. After polynomially many such queries, it tries to impersonate the prover: so $\newattacker$ will pick a random (and "fresh"\footnote{note that it can do it, since it observes all the queries $m_i$.}, i.e. $\ne m_i, \forall i$) message $m^*$ and passes it to $\attacker$; then, a $\sigma^*$ is forged (valid with probability $\ge \frac{1}{p(\lambda)}, p(\lambda) \in poly(\lambda)$); the pair $(m^*, \sigma^*)$ is forwarded to the challenger and the winning condition is that $\sigma^*$ is a valid signature of $m^*$. But this directly implies that $\newattacker$ has the same non negligible advantage of the original $\attacker$.
+	\end{solution}
+	
+	\item Is the above protocol honest-verifier zero-knowledge? Prove your answer.
+
+	\begin{solution}
+		In order to be HVZK, it should exist a simulator $S$ such that $\{pk, sk, \transcript(pk, sk)\} \approx_c \{pk, sk, S(pk)\}$. Note that this simulator is given in input only the public key $pk$. But if such $S$ exists, the underlying signature scheme $\Pi$ cannot be UF-CMA: this because $S$ is able to produce valid pairs $(m_i, \sigma_i)$ in a way that is (computationally) indistinguishable from $\transcript(pk, sk)$ and in particular it can forge a valid pair in $\game_{\Pi'}^\texttt{UF-CMA}(\lambda)$ too.
+		
+		If, instead, we remove the UF-CMA assumption of $\Pi'$, it could be that for some schemes it is possible to compute pairs $(m_i, \sigma_i)$ given only $pk$: e.g. a possible strategy could be to pick a random $\sigma_i$ and then find some message $m_i$ such that $\vrfy(pk, (m_i, \sigma_i)) = 1$. If this is the case, then we can build such a simulator $S$ and the above protocol is HVZK.
+	\end{solution}
+\end{enumerate}

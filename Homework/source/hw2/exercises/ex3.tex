@@ -1,0 +1,52 @@
+\section{ Public-Key Encryption}
+\begin{enumerate}[(a)]
+	\item Show that for any CPA-secure public-key encryption scheme for single-bit messages, the length of the ciphertext must be super-logarithmic in the security parameter.
+
+	\begin{solution}
+		If the length of the ciphertext is not super-logarithmic, we know that the number of possible ciphertexts is at most $\lambda^c$ for some constant $c$. The attacker can compute a ciphertext $c_0$ associated to bit 0, then waits for the challenge $c_b^*$ and compares the two values: if they are equal it returns 0, otherwise returns 1. Now, if the challenger selects $b = 0$, the attacker wins with probability at least $\lambda^{-c}$, otherwise wins with probability 1. Taking the weighted average we have a winning probability $w \ge \frac{1}{2} + \frac{1}{2\lambda^c}$.
+		
+		But then $|w - \frac{1}{2}| \ge \frac{1}{2\lambda^c},$ where $2\lambda^c \in poly(\lambda)$.
+	\end{solution}
+	
+	\item Let $\Pi = (\kgen, \enc, \dec)$ be a PKE scheme with message space $\bits$ (i.e., for encrypting a single bit). Consider the following natural construction of a multi-bit PKE scheme $\Pi' = (\kgen', \enc', \dec')$ with message space $\bits^t$, for some polynomial
+	$t = t(\lambda)$: (i) The key generation stays the same, i.e. $\kgen'(1^\lambda) = \kgen(1^\lambda)$; (ii) Upon input $m = (m[1], \dots,m[t]) \in \bits^t$ the encryption algorithm $\enc'(pk, m)$ outputs a ciphertext $c = (c_1, \dots, c_t)$ where $c_i \ud \enc(pk, m[i])$ for all $i \in [t]$; (iii) Upon input a ciphertext $c = (c_1,\dots, c_t)$ the decryption algorithm $\dec'(sk, c)$ outputs the same as $(\dec(sk, c_1), \dots, \dec(sk, c_t))$.
+	
+	\begin{enumerate}[(i)]
+		\item Show that if $\Pi$ is CCA1 secure, so is $\Pi'$.
+		
+		\begin{solution}
+			In order to prove the above claim, it is convenient to use the hybrid argument: note that the goal is to prove that for all PPT adversaries $\attacker$, it holds that $\game_{\Pi, \attacker}^\texttt{CCA-1}(\lambda, 0) \approx_c \game_{\Pi, \attacker}^\texttt{CCA-1}(\lambda, 1)$.  
+			
+			In particular let us define a set of intermediate hybrid games $\hyb_i$, where the adversary is given access to the decryption oracle (together with all the public parameters to make encryptions too, of course) exactly as each of the two games above: the difference is that, when the adversary commits the challenge tuple $(m_0, m_1)$, the challenge ciphertext $c^*$ is such that its $j$-th component is sampled from $\enc(pk, m_0[j])$ if $i \le j$, otherwise comes from $\ud \enc(pk, m_1[j])$.
+			
+			Note that once we fix the pair $(m_0, m_1)$, the only difference between two hybrids $\hyb_i$ and $\hyb_{i+1}$ is in the distribution of the $i$-th component of the challenge $c^*$. It is easy to see that $\hyb_1 \equiv \game_{\Pi, \attacker}^\texttt{CCA-1}(\lambda, 0)$ and $\game_{\Pi, \attacker}^\texttt{CCA-1}(\lambda, 1) \equiv \hyb_t$.
+			
+			Here for simplicity we give the distribution of the challenge ciphertext $c^*$ for each hybrid game:
+			\begin{itemize}
+				\item $\hyb_1 \rightarrow (\enc(pk, m_0[1]), \enc(pk, m_0[2]), \dots, \enc(pk, m_0[t])) \equiv \enc'(m_0)$
+				\item $\hyb_2 \rightarrow (\enc(pk, m_1[1]), \enc(pk, m_0[2]), \dots, \enc(pk, m_0[t]))$
+				\item \dots
+				\item $\hyb_{t-1} \rightarrow (\enc(pk, m_1[1]), \dots, \enc(pk, m_1[t-1]), \enc(pk, m_0[t]))$
+				\item $\hyb_t \rightarrow (\enc(pk, m_1[1]), \dots, \enc(pk, m_1[t-1]), \enc(pk, m_1[t])) \equiv \enc'(m_1)$
+			\end{itemize}
+
+		Imagine there exists a PPT distinguisher between two hybrids $\hyb_i$ and $\hyb_{i+1}$ (for some $i$). If this is the case, we can build a PPT attacker $\attacker$ to break the CCA1-security of $\Pi$. Indeed, we can ask the challenger to give us an encryption $c_b^*$ of a bit $b$. Then we pass to the distinguisher a value $c$ such that the first $i$ components are $\ud \enc(pk, m_0[j]), \forall j < i$, its $i$-th component is equal to $c_b^*$ and then the last $t-i-1$ components are $\ud \enc(pk, m_1[j])$. We then forward to the challenger the same bit returned by the distinguisher and we retain the same non negligible advantage\footnote{this proof is not valid if $m_0[i] = m_1[i]$: but in such a scenario a distinguisher between $\hyb_i$ and $\hyb_{i+1}$ cannot even exist, since the $i$-th component is sampled from the same distribution and then the two distributions are equivalent.}. This proves that $\forall i, \hyb_i \approx_c \hyb_{i+1}$ which implies that also $\game_{\Pi, \attacker}^\texttt{CCA-1}(\lambda, 0) \approx_c \game_{\Pi, \attacker}^\texttt{CCA-1}(\lambda, 1)$.
+		\end{solution}
+		
+		\item Show that, even if $\Pi$ is CCA2 secure, $\Pi'$ is not CCA2 secure.
+		
+		\begin{solution}
+			Even if the original scheme is CCA2, it is very simple to break the CCA2-security of $\Pi'$: the attacker obtains a ciphertext $c_b^*$ where the first bit of $m_0^*$ is 0 as well as the first bit of $m_1^*$. Now it produces another ciphertext for the bit 0: $x \deq \enc(0)$ such that $x$ is different from the encryption of the first bit of $m_b^*$, and then asks for the decryption of $c' = (x || c_b^{**}$\footnote{it is $c_b^*$ without the first block, the one corresponding to the encryption of the first bit of $m_b^*$}), and finally returns the decision bit $b': m_{b'}^* = \dec(c')$, winning with probability 1.
+		\end{solution}
+	\end{enumerate}
+
+	\item Consider the following variant of El Gamal encryption. Let $p = 2q + 1$, let $\G$ be the group of squares modulo $p$ (so $\G$ is a subgroup of $\Z^*_p$ of order $q$), and let $g$ be a generator of $\G$. The private key is $(\G, g, q, x)$ and the public key is $(\G, g, q, h)$, where $h = g^x$ and $x \in \Z_q$ is chosen uniformly. To encrypt a message $m \in \Z_q$, choose a uniform $r \in \Z_q$, compute $c_1 \deq g^r \modop p$ and $c_2 \deq h^r + m \modop p$, and let the ciphertext be $(c_1, c_2)$. Is this scheme CPA-secure? Prove your answer.
+	
+	\begin{solution}
+		This scheme is not CPA-secure. Indeed, note that in order to compute $c_1$ we add an element $ h^r \in \G$ to the message $m \in \Z_q$. This means that $c_2 \in \Z_p^*$ but not necessarily it is an element of $\G$: in particular, an attacker could exploit the fact that choosing uniformly a message $m \ud \Z_q$, $\P[c_2 \in \G : c_2 = h^r + m \modop p; h^r \in \G] = \frac{q}{2q+1}$, because among all the $2q + 1$ elements of the group, only $q$ of them are squares (and then belong to $\G$).
+		
+		Note also that when $m = 0$, $c_2 = h^r + m = h^r \Rightarrow c_2 \in \G$.
+
+		So our attacker can use these two messages $m_0^* = 0$ and $m_1^* \ud \Z_q$ and can receive the challenge $c_b^* (c_1^*, c_2^*)$: if $c_2^* \in \G$ it outputs 0, otherwise outputs 1. Note that if $b=1$, the attacker wins with probability 1; otherwise it wins with probability $\frac{q + 1}{2q+1}$. But this is enough to retain a non negligible advantage (the winning probability is $w = \frac{1}{2} + \frac{q + 1}{2(2q + 1)} \Rightarrow |w - \frac{1}{2}| $ is non negligible in $\lambda$).
+	\end{solution}
+\end{enumerate}

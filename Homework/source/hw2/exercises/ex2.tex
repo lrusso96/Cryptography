@@ -1,0 +1,42 @@
+\section{Number Theory}
+\begin{enumerate}[(a)]
+	\item Recall that the CDH problem asks to compute $g^{ab}$ given $(g, g^a, g^b)$ for $(G, g, q) \ud \texttt{GroupGen}(1^\lambda)$ and $a, b \ud \Z_q$. Prove that the CDH problem is equivalent to the following problem: given $(g, g^a)$ compute $g^{a^2}$, where $(G, g, q) \ud \texttt{GroupGen}(1^\lambda)$ and $a \ud \Z_q$.
+	
+	\begin{solution}
+		For sake of simplicity, let us call SCDH the problem defined above (i.e. compute $g^{a^2}$, given a tuple $(\G, g, q, g^a)$). We have to prove that both CDH $\Rightarrow$ SCDH and SCDH $\Rightarrow$ CDH.
+
+		\bigskip
+		\textbf{(CDH $\Rightarrow$ SCDH)} given some $g^a$ it is easy to see that this is equivalent to solve CDH$(g, g^a, g^a) = g^{aa} = g^{a^2}$
+		
+		\bigskip
+		\textbf{(SCDH $\Rightarrow$ CDH)} given $(g^a, g^b)$, we can compute $\frac{\mbox{SCDH}(g^{a+b})}{\mbox{SCDH}(g^a) \cdot \mbox{SCDH}(g^b)} = \frac{g^{a^2+2ab + b^2}}{g^{a^2} \cdot g^{b^2}} = g^{2ab}$: at this point we need to compute the square root of such a value: generally speaking this operation cannot be done efficiently; however, there are some groups where computing the square root can be done very easily (e.g. cyclic groups or when the order $q$ is odd). For example, consider the case for $q$ odd: it holds that $(g^{2ab})^{\frac{q + 1}{2}} = 1 \cdot (g^{2ab})^{\frac{1}{2}} = g^{ab}$.
+		 
+	\end{solution}
+	
+	\item Let $f_{g,p}: \Z_{p-1} \to \Z^*_p$ be the function defined by $f_{g,p}(x) \deq g^x \modop p$. Under what assumption is $f_{g,p}$ one-way? Prove that the predicate $h(x)$ that returns the least significant bit of $x$ is not hard-core for $f_{g,p}$.
+
+	\begin{solution}
+		The function $f_{g,p}(\cdot)$ is one-way if $g$ is a generator of $Z_p^*$, $p$ is prime and under the DL assumption. First of all we know that this function is efficiently computable: this is a requirement for all OWF. On the contrary it is hard to "invert", i.e. to find a value $x': f(x) = f(x')$. Indeed, given $y = g^x \modop p$, a PPT attacker should find a value $x': g^x \modop p = g^{x'} \modop p$. But this is possible if an only if $x - x' \equiv 0 \modop (p-1)$.
+
+		Note that an element $g^x \in \QR_p$ if and only if the least significant bit of the exponent $x$ is $0$. Without loss of generality, indeed, we assume $x \in \bits^t$: this means that $x$ can be written as $\sum_{i=0}^{t} x_i \cdot 2^i$. Given $f_{g,p}(x) = g^x \modop p = g^{\sum_{i=0}^{t} x_i \cdot 2^i} \modop p$, we can check whether $f_{g,p}(x) \in \QR_p$ or not, in order to leak the least significant bit of $x$.
+
+		The last step is to find a necessary and sufficient condition to check whether an element $y$ is a quadratic residue modulo $p$ or not. 
+
+		We can compute $s = y^{\frac{p-1}{2}}$; if $s \equiv 1 \modop p$, then $y$ is a quadratic residue; otherwise it is not.
+
+		\bigskip
+		\textbf{($\Rightarrow$)}
+		If y is a quadratic residue, then it holds that $y = (g^\alpha)^2 = g^{2\alpha}$, for some $\alpha$. But then: $y^{\frac{p-1}{2}} = g^{\alpha (p-1)} = (g^{p-1})^\alpha = 1^\alpha = 1 \modop p$.
+
+		\bigskip
+		\textbf{($\Leftarrow$)}
+		If it holds that $y^{\frac{p-1}{2}} \equiv 1 \modop p$, then $g^{\frac{x(p-1)}{2}} \equiv 1 \modop p$. This implies that $\frac{x(p-1)}{2} = 0 \modop (p-1)$ that can be satisfied if and only if $x$ is even. Finally, we conclude that $y = g^x = (g^{\frac{x}{2}})^2$, proving that $y$ is a quadratic residue.
+
+	\end{solution}
+	
+	\item Let $N$ be the product of 5 distinct odd primes. If $y \in Z^*_N$ is a quadratic residue, how many solutions are there to the equation $x^2 = y \modop N$?
+	
+	\begin{solution}
+		$x^2 \equiv y \modop N$ means that $x^2 \equiv y \modop p_1\cdot p_2\cdot p_3\cdot p_4\cdot p_5$. This implies that there exists a $k \in \Z$ such that $y = x^2 + k\prod_{i=1}^{5}p_i$. If we define $y_i\deq y \modop p_i$, we can rewrite the equation as $y_i \equiv x^2 \modop p_i, i \in \{1, \dots, 5\}$. This system of equation can be safely rewritten as $x^2 \equiv y_i \modop p_i$, but now, for the Chinese remainder theorem, we know that once we fix the values $y_i$ for all $i$, there exists a unique solution satisfying the system\footnote{with a simple substitution, we put $T\deq x^2$ and can apply the theorem.}. Note that each $y_i$ is such that it is equivalent (modulo $p_i$) to $x_i^2$, where $x_i \deq x \modop y_i$. Each of the 5 equations has two distinct solutions $\pm \alpha_i$, since $\alpha_i \not\equiv -\alpha_i \modop p_i$, because $p_i \ne 2, \forall i$. And this proves that there are $2^5$ distinct systems, each of these with a unique solution (for CR theorem). This implies that the number of solutions to the original equation is $2^5 = 32$.
+	\end{solution}
+\end{enumerate}
