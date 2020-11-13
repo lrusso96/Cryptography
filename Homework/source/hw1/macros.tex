@@ -1,0 +1,94 @@
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{mathtools}
+\usepackage{xcolor}
+\usepackage{framed}
+\usetikzlibrary{tikzmark,decorations.pathreplacing,positioning,shapes,fit,arrows}
+
+
+% Typesetting shortcuts
+\def\xor{\oplus}
+\def\and{\wedge}
+
+\def\enc{\texttt{Enc}}
+\def\dec{\texttt{Dec}}
+\def\tag{\texttt{Tag}}
+\def\vrfy{\texttt{Vrfy}}
+
+\def\P{\mathop{\mathbb P}}
+
+\def\N{{\mathbb N}}
+\def\Z{{\mathbb Z}}
+
+\def\ud{{\leftarrow_\$}} % <--$ uniform distribution
+\def\deq{{\coloneqq}}    % := def symbol
+\def\bits{{\{0, 1\}}}    % {0, 1} set
+
+\newenvironment{solution}{\noindent {\sc \underline{\textbf{SOL}}}}{$\Box$ \medskip} 
+
+
+% To typeset the header
+
+\def\courseprof{Daniele Venturi}
+\def\coursenum{1047622}
+\def\coursename{Cryptography}
+\def\author{Luigi Russo, 1699981}
+
+\newlength{\tpush}
+\setlength{\tpush}{2\headheight}
+\addtolength{\tpush}{\headsep}
+
+\newcommand{\handout}[2]{
+	\noindent\vspace*{-\tpush}\newline\parbox{\textwidth}{
+		\textbf{\coursenum : \coursename} \hfill #1 \newline
+		by prof. \courseprof \newline
+		\mbox{}\hrulefill\mbox{}}
+	\vspace*{1ex}\mbox{}\newline
+	\bigskip
+
+	\begin{center}{\Large\bf  #2}\end{center}
+		\begin{center}
+		solutions by \author
+	\end{center}
+	\bigskip
+}
+
+\newcommand{\homework}[2]{
+	\handout{#2}{Homework #1}
+	\pagestyle{myheadings}
+	\thispagestyle{plain}
+	\markboth{#2}{\coursename\space -- homework #1}
+}
+
+
+% To_do shortcut
+
+\newcounter{todo_counter}
+\newcommand{\notodo}[1]{
+}
+\newcommand{\todo}[1]{
+	\stepcounter{todo_counter}
+	\definecolor{shadecolor}{rgb}{1,0,0} % this is yellow
+	\begin{shaded}
+		TODO \arabic{todo_counter}: #1
+	\end{shaded}
+}
+
+%TikZ code "illustrating" the new "brace"
+\newcommand{\newbrace}[1][]{
+	\begin{tikzpicture}[baseline=-0.5ex]
+	\draw[#1] (0.35,0.25) -- (0,0);
+	\draw[#1] (0.35, -0.25) -- (0,0);
+	\end{tikzpicture}
+}
+
+% the optional argument allows you to select the type of arrow 
+% you can also customize the "new brace"
+\newcommand{\casesnew}[3]%
+{\;\newbrace[#1]
+	\begin{array}{lcr}
+		#2 \\
+		#3
+	\end{array}
+}

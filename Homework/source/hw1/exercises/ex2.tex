@@ -1,0 +1,132 @@
+\section{Universal Hashing}
+\begin{enumerate}[(a)]
+	\item A family $\mathcal{H} \deq \{h_s: X \to Y\}_{s \in \mathcal{S}}$ of hash functions is called $t$-wise independent if for all sequences of distinct inputs $x_1, \dots, x_t \in \mathcal{X}$, and for any output sequence $y_1, \dots, y_t \in \mathcal{Y}$ (not necessarily distinct), we have that:
+	\[ \P[h_s(x_1) = y_1 \and \dots \and h_s(x_t) = y_t, s \ud S] = \frac{1}{|\mathcal{Y}|^t} \]
+	\begin{enumerate}[(i)]
+		\item For any $t \ge 2$, show that if $\mathcal{H}$ is $t$-wise independent, then it is also $(t-1)$-wise independent.
+		
+		\begin{solution}
+			In order to be $(t-1)$-wise independent, we have to prove that:
+			\[ \P[h_s(x_1) = y_1 \and \dots \and h_s(x_{t-1}) = y_{t-1}, s \ud S] = \frac{1}{|\mathcal{Y}|^{t-1}} \]
+			
+			We can easily see that:
+			\begin{align*}
+				\P[\and_{i=1}^{t-1} (h_s(x_i) = y_i), s \ud S ] &= \\ 
+				\mbox{(law of total probability)} \rightarrow &= \sum_{y_t \in \mathcal{Y}} \P[\and_{i=1}^{t} (h_s(x_i) = y_i), s \ud S] \\
+				\mbox{(by definition of $\mathcal{H}$)} \rightarrow &= \sum_{y_t \in \mathcal{Y}} \frac{1}{|\mathcal{Y}|^t} \\
+				&= \frac{1}{|\mathcal{Y}|^{t-1}}
+			\end{align*}
+			that concludes the proof.
+		\end{solution}
+	
+		\item Let $q$ be a prime. Show that the family $\mathcal{H} = \{h_s:\Z_q \to \Z_q \}_{s \in \Z_q^3}$ defined by
+		\[ h_s(x) \deq h_{s_0,s_1,s_2}(x) \deq s_0 + s_1 \cdot x + s_2 \cdot x^2 \mbox{ mod } q \]
+		is 3-wise independent.
+		
+		\begin{solution}		
+			By applying the definition, we should prove that, for a uniformly random choice of $s$:
+			\[ \P[h_s(x_1) = y_1 \and h_s(x_2) = y_2 \and h_s(x_3) = y_3] = \frac{1}{q^3} \]
+			We have that:
+			\begin{align*}
+				\P[\and_{i=1}^3 (h_s(x_i) = y_i)] &= \\
+				&=\P\begin{bmatrix}
+						\begin{cases}
+							s_2\cdot x_1^2 + s_1\cdot x_1 + s_0 = y_1 \\
+							s_2\cdot x_2^2 + s_1\cdot x_2 + s_0 = y_2 \\
+							s_2\cdot x_3^2 + s_1\cdot x_3 + s_0 = y_3
+						\end{cases}
+					\end{bmatrix} \\
+				&= \P\begin{bmatrix}
+					 	\begin{pmatrix}
+							x_1^2 & x_1 & 1 \\
+							x_2^2 & x_2 & 1 \\
+							x_3^2 & x_3 & 1
+						\end{pmatrix}
+						\begin{pmatrix}
+							s_2 \\
+							s_1 \\
+							s_0
+						\end{pmatrix}
+						=
+						\begin{pmatrix}
+							y_1 \\
+							y_2 \\
+							y_3
+						\end{pmatrix}
+					\end{bmatrix} \\
+				&= \P\begin{bmatrix}
+					 	\begin{pmatrix}
+							s_2 \\
+							s_1 \\
+							s_0
+						\end{pmatrix}
+						=
+						\begin{pmatrix}
+							x_1^2 & x_1 & 1 \\
+							x_2^2 & x_2 & 1 \\
+							x_3^2 & x_3 & 1
+						\end{pmatrix}^{-1}
+						\begin{pmatrix}
+							y_1 \\
+							y_2 \\
+							y_3
+						\end{pmatrix}
+					\end{bmatrix} \\
+				\mbox{(for some constant k)} \rightarrow&= \P\begin{bmatrix}
+					 	\begin{pmatrix}
+							s_2 \\
+							s_1 \\
+							s_0
+						\end{pmatrix}
+						=
+						\begin{pmatrix}
+							k_1 \\
+							k_2 \\
+							k_3
+						\end{pmatrix}
+					\end{bmatrix} \\
+				\mbox{($s$ is uniformly random)} \rightarrow &= \frac{1}{q^3}
+			\end{align*}
+			Note that this is valid if and only if we can invert that matrix, i.e. its determinant has to be nonzero.
+			\begin{align*}
+				\det\begin{pmatrix}
+					x_1^2 & x_1 & 1 \\
+					x_2^2 & x_2 & 1 \\
+					x_3^2 & x_3 & 1
+				\end{pmatrix} &=
+				x_1^2x_2 + x_1x_3^2 + x_2^2x_3 - x_2x_3^2 -x_1^2x_3 - x_1x_2^2 \\
+				&= (x_1 - x_2)(x_1-x_3)(x_2-x_3) \\
+				\mbox{(inputs are distinct by hypothesis)} \rightarrow&\ne 0
+			\end{align*}
+		\end{solution}
+	\end{enumerate}
+
+	\item Say that $X$ is a $(k, n)$-source if $X \in \bits^n$, and the min-entropy of $X$ is at least $k$.
+	Answer the following questions:
+	
+	\begin{enumerate}[(i)]
+		\item Suppose that $l = 128$; what is the minimal amount of min-entropy needed in order to obtain statistical error $\epsilon = 2^{-80}$ when applying the leftover hash lemma? What is the entropy loss?
+		
+		\begin{solution}
+			Leftover hash lemma states that, given pairwise independent $\mathcal{H} = \{h_s: \bits^n \to \bits^l\}_{s \in \bits^d}, h_S(X)$ is a $(k, \epsilon)$-extractor for a value of min-entropy $k \geq l + \delta$, where $\delta = 2 \log(1/\epsilon) - 2$ is the entropy loss.
+			
+			In this case we want to compute $k^*$, i.e. the minimum $k$ satisfying the inequality. So we have:
+			\begin{align*}
+				&\delta = 2 \log(1/2^{-80}) - 2 = 2 \log(2^{80}) - 2 = 2\cdot 80 - 2 = 158 \\
+				&\Rightarrow k \ge 128 + 158 = 286 = k^*
+			\end{align*}
+		\end{solution}
+		
+		\item Suppose that $k = 238$; what is the maximal amount of uniform randomness that you can obtain with statistical error $\epsilon = 2^{-80}$ when applying the leftover hash lemma? Explain how to obtain $l = 320$ using computational assumptions.
+
+		\begin{solution}
+			We follow a similar approach, this time we are interested in $l^*$, i.e. the maximum $l$ satisfying the inequality:
+			\begin{align*}
+				&\delta = 158 \leftarrow \mbox{(same as before)} \\
+				&238 \ge l + 158 \Rightarrow l \le 238 - 158 = 80 = l^*
+			\end{align*}			
+			Now, in order to obtain 320 bits of output, we can make use of a PRG $G: \bits^{\lambda} \to \bits^{4\lambda}$, for $\lambda = 80$.
+			There is a well known theorem that guarantees us the existence of such $G$ (since the stretch is polynomial in $\lambda$) under the assumption that OWF exist. In this way, however, it should be noticed that we are moving from statistical equivalence between distributions (thanks to random extraction) to computational equivalence (we have deeply discussed the differences and the practical implications of this hypothesis).
+		\end{solution}
+	\end{enumerate}
+\end{enumerate}

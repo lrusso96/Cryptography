@@ -1,0 +1,88 @@
+\section{One-way Functions}
+\begin{enumerate}[(a)]
+	\item Let $G: \bits^\lambda \to \bits^{2\lambda}$ be a PRG with $\lambda$-bit stretch. Prove that $G$ is by itself a one-way function.
+	
+	\begin{solution}
+		\begin{cryptoredux}
+			{3.a}
+			{Base an attack to PRG $G$, assuming the existence of a PPT attacker $\mathcal{A}$, able to find pre-images of $G$ with non negligible probability. $\mathcal{A}^*$ returns a bit $b$ to the challenger $\mathcal{C}$, in order to distinguish.}
+			{}
+			{}
+			{}
+			\receive{\shortstack[l]{
+					$y \casesnew{-stealth}{\ud \bits^{2\lambda}}{G(x), x \ud \bits^\lambda}$
+			}}
+			{$y$}{}
+			\invoke{}{$y$}{}
+			\return{}{$x'$}{}
+			\cseqdelay
+            \send{$b = \begin{cases}
+				1 &\textsc{iff } G(x') = y\\
+				0 &\textsc{else}
+				\end{cases}$
+			}{$b$}{}
+		\end{cryptoredux}
+		Assume G is not a OWF: then there exists some PPT attacker $\mathcal{A}$ able to find a pre-image $x'$ of input values $y$ (see figure \ref{cryptoredux:3.a}).
+		Let us define \underline{valid}\footnote{just a shortcut to indicate that $y \in G(\cdot)$.} an input $y$ if $\exists x: G(x) = y$.
+	
+		We have that $\P[\mathcal{A}(y) = 1: x \ud \bits^\lambda; y = G(x)] \ge \frac{1}{p(\lambda)}$, for some $p(\lambda) \in poly(\lambda)$ for hypothesis.
+		Moreover, the probability that a random $2\lambda$ bits string is valid is at most equal to the ratio between the number of valid inputs and the number of possible inputs: this ratio is equal to $\frac{2^\lambda}{2^{2\lambda}} = 2^{-\lambda}$.
+		From which we derive that $\P[\mathcal{A}(y) = 1: y \ud \bits^{2\lambda}] \le 2^{-\lambda}$.
+		So we have:
+		\[\P[\mathcal{A}(y) = 1: x \ud \bits^\lambda; y = G(x)] - \P[\mathcal{A}(y) = 1: y \ud \bits^{2\lambda}] \ge \frac{1}{p(\lambda)} - 2^{-\lambda} \notin negl(\lambda) \]
+	\end{solution}
+
+	\item Let $f: \bits^n \to \bits^n$ be a OWF. Consider the function $g: \bits^{n + \log{n}} \to \bits^{n + \log{n} + 1}$ defined by $g(x||j) \deq (f(x), j, x_j)$, where $x \deq (x_1, \dots, x_n)$, and $j$ is interpreted as an integer in $[n]$ (i.e. $|j| = \log n$).
+	
+	\begin{enumerate}[(i)]
+		\item Show that $g$ is a OWF if $f$ is.
+		
+		\begin{solution}
+			Assume not. Then there exists a PPT attacker $\mathcal{A}$ able to invert $g$ with non negligible probability: if so, we show that we can break $f$ too (see figure \ref{cryptoredux:3.b.1}).
+			\begin{cryptoredux}
+				{3.b.1}
+				{Base an attack to OWF $f$, assuming the existence of a PPT attacker $\mathcal{A}$, able to invert $g$ with non negligible probability. $\mathcal{A}^*$ wins the game if it finds a value $x'$ such that $f(x') = y$ provided by the challenger $\mathcal{C}$.}
+				{}
+				{}
+				{}
+				\receive{\shortstack[l]{
+						$x \ud \bits^n$ \\
+						$y = f(x) $
+				}}
+				{$y$}{}
+				\cseqdelay
+				\invoke{\shortstack[l]{
+						$j \ud [n]$ \\
+						$x'_j \ud \bits $
+				}}{$y || j || x'_j$}{}
+				\cseqdelay
+				\return{}{$x'$}{}
+				\send{}{$x'$ \textsc{iff } f(x') = y}{}
+				\invoke{}{$y || j || (x'_j \xor 1)$}{}
+				\return{}{$x'$}{}
+				\send{}{$x'$}{}
+			\end{cryptoredux}
+			Our attacker tries to guess the value for the $j$-th bit and queries $\mathcal{A}$ to find the pre-image of $y||j|x_j$. However, it could be that the guess is wrong: but we can try again, flipping the  $j$-th bit, if we realize that $f(x') \ne y$. Then, it is obvious that the probability to win the game, i.e. to find some valid pre-image of $y$ is exactly equal to the probability of finding a pre-image of a valid $y^*$ for attacker $\mathcal{A}$: and this is non negligible by assumption.
+		\end{solution}
+	
+		\item Show that for every $i \in [n']$ there is a PPT algorithm $A_i$ for which
+		\[ \P[A_i(g(x')) = x_i' : x' \ud \bits^{n + \log{n}}] \ge \frac{1}{2} + \frac{1}{2n}\]
+		where $x' = (x_1, \dots, x_{n'})$
+		
+		\begin{solution}
+			Let $y \in \bits^{n + \log{n}}, y' \in \bits^n, j \in \bits^{\log n}$.
+			
+			We define $A_i(y) = A_i(y'||j||\cdot) = \begin{cases}
+			y_i &\textsc{if } i > n \vee i = j \\
+			0 &\textsc{else}
+			\end{cases}$
+
+			Then we can prove that $\P[A_i(g(x')) = x_i' : x' \ud \bits^{n + \log{n}}] \ge \frac{1}{2} + \frac{1}{2n}$
+			
+			First of all, $A_i$ is a PPT $\forall i$, since it only parses the input string, whose length is $n + \log{n} + 1$.
+			As for the bound, for all indexes $i > n$ (i.e. the last $\log{n}$ bits) $A_i$ finds the correct value, because it is embedded in the input.
+			For all other indexes, there are two cases: if $i = j$ (this happens with probability = $1/n$) $A_i$ returns the correct value with probability 1 (again, the value is visible to the attacker); if $i \ne j$ (with probability $\frac{n-1}{n}$) $A_i$ can at least guess (returning 0) and win with probability $\frac{1}{2}$. If we take the weighted average we prove the bound also for $i \le n$, since:
+			\[\forall i \le n,\; \P[A_i(g(x')) = x_i' : x' \ud \bits^{n + \log{n}}] \ge \frac{1}{n} + \frac{n-1}{2n} = \frac{1}{2} + \frac{1}{2n} \]
+		\end{solution}	
+	\end{enumerate}
+\end{enumerate}

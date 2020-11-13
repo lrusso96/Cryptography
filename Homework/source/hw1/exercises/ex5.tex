@@ -1,0 +1,44 @@
+\section{Pseudo-random Functions}
+\begin{enumerate}[(a)]
+	\item Show that no PRF family can be secure against computationally unbounded distinguishers.
+	
+	\begin{solution}
+		Let us consider any PRF family $F_k: \bits^n \to \bits^l, k \in \bits^\lambda, n, l \in poly(\lambda)$. An unbounded attacker could "simply" brute-force\footnote{in the sense that computes $F_k(x) \forall k,x$.} $F_k(\cdot), \forall k$. At this point he queries the challenger, with all possible inputs $x_i$, receiving back $y_i$ and returns 1 iff $\exists k^*: \forall i, F_{k^*}(x_i) = y_i$. Of course, if the challenger returns values computed with the PRF, the distinguisher will return 1 with probability 1. Moreover, we know that the number of possible distinct functions associated with $F$ is at most $2^\lambda$ (since they depend on the key $k$); on the contrary, the number of possible functions from $2^n \to 2^l$ is $(2^l)^{2^n}$. The probability that the challenger, selecting at random a function R, picks a function that is equivalent to one of the functions $F_k$ is $\le \frac{|K|}{|\mathcal{R}(n,l)|} = \frac{2^\lambda}{(2^l)^{2^n}}$.
+		
+		This means that
+		\[\P[\mathcal{A}(y) = 1: y = F_k(x); k \ud \bits^l] - \P[\mathcal{A}(y) = 1: y = R(x); R \ud \mathcal{R}(n, l)] \ge 1 - \frac{2^\lambda}{(2^l)^{2^n}}\]
+		that is non negligible, since I assume that $(2^l)^{2^n} >> 2^\lambda$.
+	\end{solution}
+	
+	\item Analyze the following candidate PRFs. For each of them, specify whether you think the derived construction is secure or not; in the first case prove your answer, in the second case exhibit a concrete counterexample.
+	
+	\begin{enumerate}[(i)]
+		\item $F_k(x) = G'(k) \xor x$, where $G: \bits^\lambda \to \bits^{\lambda + l}$ is a PRG, and $G'$ denotes the output of $G$ truncated to $\lambda$ bits.
+		
+		\begin{solution}
+			This solution does not work, since we have that, for two inputs $x_1, x_2$:
+			\[x_1 \xor x_2 = F_k(x_1) \xor F_k(x_2), \forall k\]
+			Observed that, we can build an efficient distinguisher that makes two distinct queries and outputs 1 if and only if the xor of the inputs is equal to the xor of the outputs. Clearly, if the values are the outputs of $F_k$, the attacker returns 1 with probability 1; if the values are taken from a truly random function $R$, then the attacker outputs 1 with probability equal to $2^{-\lambda}$.
+			Then it follows:
+			\begin{align*}
+			&\P[A(y_1, y_2): y_1 = F_k(x_1); y_2 = F_k(x_2), k \ud \bits^\lambda] + \\
+			- &\P[A(y_1, y_2): y_1 = R(x_1); y_2 = R(x_2), R \ud \mathcal{R}(\lambda, \lambda + l)] \ge 1 - 2^{-\lambda}
+			\end{align*}
+		that is non negligible.
+		\end{solution}
+		
+		\item $F_k(x) \deq F_x(k)$, where $F: \bits^\lambda \times \bits^\lambda \to \bits^{\lambda + l}$ is a PRF.
+		
+		\begin{solution}
+			This solution does not work. Assume the existence of a very bad key $k_b$ that transforms F into a constant function (e.g. always 0): this subtle property does not alter the security of $F_k(\cdot)$ for a random key, since this bad key is only chosen with negligible probability. However, the proposed construction allows the attacker to fix the key (it is the input $x$ passed by the attacker!), so in order to distinguish, he simply queries the challenger with input $k_b$: then it is easy to distinguish with non negligible probability, since the attacker returns 1 if and only if he obtains 0. In case of PRF, the attacker returns 1 with probability 1; otherwise it returns 1 with probability $2^{-\lambda}$.
+		\end{solution}
+		
+		\item $F_k'(x) = F_k(k||0) || F_k(k||1)$, where $x \in \bits^{n - 1}$.
+
+		\begin{solution}
+			This solution works instead. Assume not: then there exists a PPT attacker $\mathcal{A}$ able to break $F_k'(\cdot)$. I show how to build on top of $\mathcal{A}$ an attacker $\mathcal{A}^*$ able to break the security of $F$. In particular $\mathcal{A}$ can distinguish $F_k'(\cdot)$ from a truly random function $R \ud \mathcal{R}(n-1, n)$. Whenever $\mathcal{A}$ queries some input $x$, $\mathcal{A}^*$ forwards two queries $x_b\deq x || b$, for $b \in \bits$, after receiving the values $y_1, y_2$, sends back to $\mathcal{A}$ the value $y\deq y_1 || y_2$.
+			Finally, $\mathcal{A}^*$ returns the same bit $b'$ of $\mathcal{A}$ and distinguishes as well as $\mathcal{A}$ does. Note that the number of queries to the challenger is the double of the queries needed by $\mathcal{A}$: however this is perfectly legitimate (it is still polynomial!).		
+		\end{solution}
+	
+	\end{enumerate}
+\end{enumerate}
