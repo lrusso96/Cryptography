@@ -15,6 +15,5 @@ This repository includes my solutions to:
 
 and course notes by some other students.
 
-## Contributing
-
-Feel free to open PR, report issues and problems.
+[See the page of discussions](https://github.com/lrusso96/Cryptography/discussions) to discover suggested study material, discuss about issues or errors and ask questions.
+Feel free to open PR as well!
