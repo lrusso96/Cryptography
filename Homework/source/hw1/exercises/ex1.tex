@@ -1,51 +1,51 @@
 \section{Perfect Secrecy}
 \begin{enumerate}[(a)]
 	\item Prove or refute. An encryption scheme $(\enc, \dec)$ with key space $\mathcal{K}$, message space $\mathcal{M}$, and ciphertext space $\mathcal{C}$ is perfectly secret if and only if the following holds: for every probability distribution $M$ over $\mathcal{M}$, and every $c_0, c_1 \in \mathcal{C}$, we have $\P[C = c_0] = \P[C = c_1]$, where $C\deq \enc(K, M)$ with $K$ uniform over $\mathcal{K}$.
-	
-	\begin{solution}
-		I am going to refute the previous claim. Indeed, it is easy to show that it is possible to have a non-uniform ciphertext distribution, still preserving the perfect secrecy property. Consider the following scheme $\Pi$:
-		\begin{align*}
-			\enc(m) &= (m \xor r) || b = c' || b \\
-			\dec(c) &= \dec(c' || b) = c' \xor r
-		\end{align*}
-		with $r \ud \bits^\lambda$ and $b \in \bits$, such that $\P[b = 0] > \P[b = 1]\footnote{it's crucial that this probability is nonzero, otherwise $\mathcal{C}$ does not contain messages ending in 1.} > 0$.
-		
-		Note that this is a simple variant of OTP, except that we append a bit $b$ to the ciphertext: this scheme is clearly correct, since $\dec$ algorithm simply ignores the last bit of the ciphertext and then applies the xor with the secret key. Note that the choice of $b$ is completely independent of the message. So we can claim this scheme is perfectly secure because:
-		
-		\begin{align*}
-			\P[M = m|C = c] &= \\
-			\mbox{(b is chosen independently of m)} \rightarrow&= \P[M = m|C = c'||\cdot] \\
-			\mbox{(OTP)} \rightarrow &= \P[M = m] \\
-		\end{align*}
-		
-		However, the distribution over $\mathcal{C}$ is not uniform: indeed, let's consider the case for $\P[b = 0] = \frac{2}{3}$. The ciphertexts ending with a 0 bit are two times as likely as ciphertexts ending with bit 1.
-		
-	\end{solution}
-	
-	\item Let $(\enc, \dec)$ be a perfectly secret encryption scheme over message space $\mathcal{M}$ and key space $\mathcal{K}$, satisfying the following relaxed correctness requirement: there exists $t \in \N$ such that, $\forall m \in \mathcal{M}$, it holds that $\P[\dec(k, \enc(k, m)) = m] \ge 2^{-t}$ (where the probability is over the choice of $k \ud \mathcal{K}$). Prove that $|\mathcal{K}| \ge |\mathcal{M}| \cdot 2^{-t}$.
-	
-	\begin{solution}
-		Assume not: so $|\mathcal{K}| < 2^{-t}|\mathcal{M}|$.
-		Let $M$ be uniform over $\mathcal{M}, c \in \mathcal{C}: \P[C=c] > 0$ and define $\mathcal{M}' = \{ m \in \mathcal{M}: \P[m = \dec(k,c)] \ge 2^{-t}\}_{k \in \mathcal{K}}$.
-		
-		We have that, $\forall k \in \mathcal{K}$:
-		\begin{align}
-			&\sum_{m \in \mathcal{M}'} \P[m=\dec(k, c)] \le 1 \\
-			&\sum_{m \in \mathcal{M}'} \P[m=\dec(k, c)] \ge 2^{-t} \cdot |\{m: \dec(k, c) = m\}|
-		\end{align}
-		
-		This implies that:
-		\[ 2^{-t} \cdot |\{m: \dec(k, c) = m\}| \le 1 \]
-		
-		If we now sum over the key-space $\mathcal{K}$ we have that:
-		\[2^{-t}\cdot |\mathcal{M}'| \le 2^{-t}\cdot \sum_{k \in \mathcal{K}} |\{m: \dec(k, c) = m\}| \le |\mathcal{K}| < 2^{-t}\cdot |\mathcal{M}| \]
 
-		from which we derive that $|\mathcal{M}| < |\mathcal{M}'|$, i.e. $\exists m^* \in \mathcal{M} \backslash \mathcal{M}'$.
-		Note that $\forall k \in \mathcal{K}, \enc(k, m^*)\ne c$, otherwise we would have that
-		\begin{align}
-			&\P[\dec(k, c) = m^*] < 2^{-t} &(m^* \in  \mathcal{M} \backslash \mathcal{M}') \\
-			&\P[\dec(k, c) = m^*] \ge 2^{-t} &(\mbox{relaxed correctness})
-		\end{align}
-		that is clearly an absurd. But now we have that $\P[M=m^*] = \frac{1}{|\mathcal{M}|}$ (it is uniform by assumption). However, $\P[M=m^*|C=c] = 0 \ne \frac{1}{|\mathcal{M}|}$ and this violates the perfect secrecy of the scheme.
-	\end{solution}
+	      \begin{solution}
+		      I am going to refute the previous claim. Indeed, it is easy to show that it is possible to have a non-uniform ciphertext distribution, still preserving the perfect secrecy property. Consider the following scheme $\Pi$:
+		      \begin{align*}
+			      \enc(m) & = (m \xor r) || b = c' || b \\
+			      \dec(c) & = \dec(c' || b) = c' \xor r
+		      \end{align*}
+		      with $r \ud \bits^\lambda$ and $b \in \bits$, such that $\P[b = 0] > \P[b = 1]\footnote{it's crucial that this probability is nonzero, otherwise $\mathcal{C}$ does not contain messages ending in 1.} > 0$.
+
+		      Note that this is a simple variant of OTP, except that we append a bit $b$ to the ciphertext: this scheme is clearly correct since $\dec$ algorithm simply ignores the last bit of the ciphertext and then applies the xor with the secret key. Note that the choice of $b$ is completely independent of the message. So we can claim this scheme is perfectly secure because:
+
+		      \begin{align*}
+			      \P[M = m|C = c]                                     & =                         \\
+			      \mbox{(b is chosen independently of m)} \rightarrow & = \P[M = m|C = c'||\cdot] \\
+			      \mbox{(OTP)} \rightarrow                            & = \P[M = m]               \\
+		      \end{align*}
+
+		      However, the distribution over $\mathcal{C}$ is not uniform: indeed, let's consider the case for $\P[b = 0] = \frac{2}{3}$. The ciphertexts ending with a 0 bit are two times as likely as ciphertexts ending with bit 1.
+
+	      \end{solution}
+
+	\item Let $(\enc, \dec)$ be a perfectly secret encryption scheme over message space $\mathcal{M}$ and key space $\mathcal{K}$, satisfying the following relaxed correctness requirement: there exists $t \in \N$ such that, $\forall m \in \mathcal{M}$, it holds that $\P[\dec(k, \enc(k, m)) = m] \ge 2^{-t}$ (where the probability is over the choice of $k \ud \mathcal{K}$). Prove that $|\mathcal{K}| \ge |\mathcal{M}| \cdot 2^{-t}$.
+
+	      \begin{solution}
+		      Assume not: so $|\mathcal{K}| < 2^{-t}|\mathcal{M}|$.
+		      Let $M$ be uniform over $\mathcal{M}, c \in \mathcal{C}: \P[C=c] > 0$ and define $\mathcal{M}' = \{ m \in \mathcal{M}: \P[m = \dec(k,c)] \ge 2^{-t}\}_{k \in \mathcal{K}}$.
+
+		      We have that, $\forall k \in \mathcal{K}$:
+		      \begin{align}
+			       & \sum_{m \in \mathcal{M}'} \P[m=\dec(k, c)] \le 1                                    \\
+			       & \sum_{m \in \mathcal{M}'} \P[m=\dec(k, c)] \ge 2^{-t} \cdot |\{m: \dec(k, c) = m\}|
+		      \end{align}
+
+		      This implies that:
+		      \[ 2^{-t} \cdot |\{m: \dec(k, c) = m\}| \le 1 \]
+
+		      If we now sum over the key-space $\mathcal{K}$ we have that:
+		      \[2^{-t}\cdot |\mathcal{M}'| \le 2^{-t}\cdot \sum_{k \in \mathcal{K}} |\{m: \dec(k, c) = m\}| \le |\mathcal{K}| < 2^{-t}\cdot |\mathcal{M}| \]
+
+		      from which we derive that $|\mathcal{M}| < |\mathcal{M}'|$, i.e. $\exists m^* \in \mathcal{M} \backslash \mathcal{M}'$.
+		      Note that $\forall k \in \mathcal{K}, \enc(k, m^*)\ne c$, otherwise we would have that
+		      \begin{align}
+			       & \P[\dec(k, c) = m^*] < 2^{-t}   & (m^* \in  \mathcal{M} \backslash \mathcal{M}') \\
+			       & \P[\dec(k, c) = m^*] \ge 2^{-t} & (\mbox{relaxed correctness})
+		      \end{align}
+		      that is clearly an absurd. But now we have that $\P[M=m^*] = \frac{1}{|\mathcal{M}|}$ (it is uniform by assumption). However, $\P[M=m^*|C=c] = 0 \ne \frac{1}{|\mathcal{M}|}$ and this violates the perfect secrecy of the scheme.
+	      \end{solution}
 \end{enumerate}

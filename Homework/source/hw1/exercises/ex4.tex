@@ -1,35 +1,35 @@
 \section{Pseudo-random Generators}
 \begin{enumerate}[(a)]
 	\item Let $G_1, G_2: \bits^\lambda \to \bits^{\lambda + l}$ be two deterministic functions mapping $\lambda$ bits into $\lambda + l$ bits (for $l \ge 1$). You know that at least one of $G_1, G_2$ is a secure PRG, but you don't know which one. Show how to design a secure PRG $G^*:\bits^{2\lambda} \to \bits^{\lambda + l}$ by combining $G_1$ and $G_2$.
-	
-	\begin{solution}	
-		I claim that $G^*\deq G_1(s_1) \xor G_2(s_2), s_1, s_2 \ud \bits^\lambda$ is a PRG. Indeed, assume without loss of generality that $G_1$ is a PRG and assume that there exists a PPT attacker $\mathcal{A}$ able to distinguish, with non negligible probability, between $G^*(U_\lambda||U_\lambda)$ and $U_{\lambda + l}$. Then we can build an attacker $\mathcal{A}^*$ that breaks $G_1$ (see figure \ref{cryptoredux:4.a}).
-		\begin{cryptoredux}
-			{4.a}
-			{Base an attack to PRG $G_1$, assuming the existence of a PPT attacker $\mathcal{A}$, able to break the security of $G^*$ with non negligible probability. $\mathcal{A}^*$ returns a bit $b$ to the challenger $\mathcal{C}$, in order to distinguish.}
-			{}
-			{}
-			{}
-			\receive{\shortstack[l]{
-					$z \casesnew{-stealth}{ G_1(s_1), s_1 \ud \bits^\lambda}{\ud \bits^\lambda}$
-			}}
-			{$z$}{}
-			\cseqdelay			
-			\invoke{\shortstack[l]{
-					$s_2 \ud \bits^\lambda$ \\
-					$z^* = z \xor  G_2(s_2)$
-			}}{$z^*$}{}
-			\cseqdelay
-			\return{}{$b$}{}
-			\send{}{$b$}{}	
-		\end{cryptoredux}
-	
-		Note that is crucial that $s_1, s_2$ are both uniformly chosen at random, otherwise $G^*$ is not guaranteed to be a secure PRG.
-	\end{solution}
+
+	      \begin{solution}
+		      I claim that $G^*\deq G_1(s_1) \xor G_2(s_2), s_1, s_2 \ud \bits^\lambda$ is a PRG. Indeed, assume without loss of generality that $G_1$ is a PRG and assume that there exists a PPT attacker $\mathcal{A}$ able to distinguish, with non negligible probability, between $G^*(U_\lambda||U_\lambda)$ and $U_{\lambda + l}$. Then we can build an attacker $\mathcal{A}^*$ that breaks $G_1$ (see figure \ref{cryptoredux:4.a}).
+		      \begin{cryptoredux}
+			      {4.a}
+			      {Base an attack to PRG $G_1$, assuming the existence of a PPT attacker $\mathcal{A}$, able to break the security of $G^*$ with non-negligible probability. $\mathcal{A}^*$ returns a bit $b$ to the challenger $\mathcal{C}$, in order to distinguish.}
+			      {}
+			      {}
+			      {}
+			      \receive{\shortstack[l]{
+					      $z \casesnew{-stealth}{ G_1(s_1), s_1 \ud \bits^\lambda}{\ud \bits^\lambda}$
+				      }}
+			      {$z$}{}
+			      \cseqdelay
+			      \invoke{\shortstack[l]{
+					      $s_2 \ud \bits^\lambda$ \\
+					      $z^* = z \xor  G_2(s_2)$
+				      }}{$z^*$}{}
+			      \cseqdelay
+			      \return{}{$b$}{}
+			      \send{}{$b$}{}
+		      \end{cryptoredux}
+
+		      Note that is crucial that $s_1, s_2$ are both uniformly chosen at random, otherwise $G^*$ is not guaranteed to be a secure PRG.
+	      \end{solution}
 
 	\item Can you prove that your construction works when using the same seed $s^* \in \bits^\lambda$ for both $G_1$ and $G_2$? Motivate your answer.
 
-	\begin{solution}
-		A simple counterexample is for $G_2\deq G_1 \xor a$, for some $a \in \bits^{\lambda + l}$. Then $G^*(s^*, s^*) = a, \forall s^*$. Note, however, that if the two seeds are both chosen at random, this happens only with negligible probability, so we can tolerate the existence of such a bad case.
-	\end{solution}
+	      \begin{solution}
+		      A simple counterexample is for $G_2\deq G_1 \xor a$, for some $a \in \bits^{\lambda + l}$. Then $G^*(s^*, s^*) = a, \forall s^*$. Note, however, that if the two seeds are both chosen at random, this happens only with negligible probability, so we can tolerate the existence of such a bad case.
+	      \end{solution}
 \end{enumerate}

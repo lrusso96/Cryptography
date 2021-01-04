@@ -1,121 +1,121 @@
 \section{Secret-Key Encryption}
 \begin{enumerate}[(a)]
 	\item Prove that no secret-key encryption scheme $\Pi = (\enc, \dec)$ can achieve chosen-plaintext attack security in the presence of a computationally unbounded adversary
-	(which thus can make an exponential number of encryption queries before/after being	given the challenge ciphertext).
-	
-	\begin{solution}	
-		Without loss of generality we can say that any SKE scheme $\Pi = (\enc, \dec)$, is such that:
-		\begin{align*}
-			&c \ud \enc(k, m) \\
-			&m = \dec(k, c)
-		\end{align*}
-		for $k \in \bits^\lambda$.
-		Note that here I assume that the algorithm $\enc$ uses the secret key $k$ in addition to some source of random (e.g. nonces) in order to produce the ciphertext $c$: without loss of generality I assume that, once we fix the secret key and the message m, the maximum number of valid ciphertexts associated with m is some $p(\lambda) \in poly(\lambda)$ (clearly this quantity depends on the randomness injected by $\enc$); instead, as discussed in class, I assume that $\dec$ is a deterministic algorithm.
+	      (which thus can make an exponential number of encryption queries before/after being	given the challenge ciphertext).
+
+	      \begin{solution}
+		      Without loss of generality we can say that any SKE scheme $\Pi = (\enc, \dec)$, is such that:
+		      \begin{align*}
+			       & c \ud \enc(k, m) \\
+			       & m = \dec(k, c)
+		      \end{align*}
+		      for $k \in \bits^\lambda$.
+		      Note that here I assume that the algorithm $\enc$ uses the secret key $k$ in addition to some source of random (e.g. nonces) in order to produce the ciphertext $c$: without loss of generality I assume that, once we fix the secret key and the message m, the maximum number of valid ciphertexts associated with m is some $p(\lambda) \in poly(\lambda)$ (clearly this quantity depends on the randomness injected by $\enc$); instead, as discussed in class, I assume that $\dec$ is a deterministic algorithm.
 
 
-		\begin{cryptogame}
-			{6.a.1}
-			{Simulation of $Game_{\Pi, \mathcal{A}}^{\texttt{SKE-CPA}}(\lambda, b)$ for an unbounded $\mathcal{A}$ adversary that asks exponentially many times to encrypt the same message $m_0^*$ trying to get a collision.}
-			{}
-			{}
-			{}
-			\cseqchallenger{$k \ud \bits^\lambda$}
-			\send{}{$m_0^*, m_1^*$}{}
-			\receive{\shortstack[l]{
-					$c^* \ud \enc(k, m_b^*)$
-			}}{$c^*$}{}
-			\cseqdelay
-			\cseqbeginloop
-			\send{}{$m_0^*$}{}
-			\receive{$c \ud \enc(k, m_0^*)$}{$c$}{}
-			\send{}{$0 \textsc{ iff } c = c^*$}{}
-			\cseqendloop
-			\cseqdelay
-			\send{}{$1$}{}
-		\end{cryptogame}
+		      \begin{cryptogame}
+			      {6.a.1}
+			      {Simulation of $Game_{\Pi, \mathcal{A}}^{\texttt{SKE-CPA}}(\lambda, b)$ for an unbounded $\mathcal{A}$ adversary that asks exponentially many times to encrypt the same message $m_0^*$ trying to get a collision.}
+			      {}
+			      {}
+			      {}
+			      \cseqchallenger{$k \ud \bits^\lambda$}
+			      \send{}{$m_0^*, m_1^*$}{}
+			      \receive{\shortstack[l]{
+					      $c^* \ud \enc(k, m_b^*)$
+				      }}{$c^*$}{}
+			      \cseqdelay
+			      \cseqbeginloop
+			      \send{}{$m_0^*$}{}
+			      \receive{$c \ud \enc(k, m_0^*)$}{$c$}{}
+			      \send{}{$0 \textsc{ iff } c = c^*$}{}
+			      \cseqendloop
+			      \cseqdelay
+			      \send{}{$1$}{}
+		      \end{cryptogame}
 
-		I claim that the following unbounded attacker (see figure \ref{cryptogame:6.a.1}) $\mathcal{A}$ is able to distinguish with non negligible probability the CPA games\footnote{as defined in class} $G_{\Pi, \mathcal{A}}^{CPA}(\lambda, b), b \in \bits$: $\mathcal{A}$ sends two messages $m_0^*$ and $m_1^*$, and receives a ciphertext $c_b^*$ (remind that the goal for the attacker is to guess $b$). Then it asks for exponentially many encryptions of $m_0^*$: if it gets back $c_b^*$, then returns $b' = 0$; otherwise, if at the end of all these queries, it never observes the desired ciphertext, returns $b'=1$. Note that if the challenger selects $b = 1$, the attacker wins with probability 1 (because it will never\footnote{$\dec$ is deterministic: it uses the secret key and (part of) the ciphertext to extract the message.} observe $c_1^*$ asking for the encryption of $m_0$); instead, if $b = 0$, it loses the game with negligible probability.	Indeed, let assume that the number of queries is $Q = 2^{p(\lambda)}$: then, the probability that after $Q$ runs, the challenger never encrypts the message in the same way\footnote{clearly the secret key $k$ is fixed: what continuously changes is the random information used by $\enc$.} he did the first time is $ \le (1 - \frac{1}{2^{p(\lambda)}})^{2^{p(\lambda)}} \le \frac{1}{e}$. But then:		
-		\[ \P[G_{\Pi, \mathcal{A}}^{CPA}(\lambda, 1) = 1] - \P[G_{\Pi, \mathcal{A}}^{CPA}(\lambda, 0) = 1] \ge 1 - \frac{1}{e} \]
-		i.e. non negligible.		
-	\end{solution}
-	
+		      I claim that the following unbounded attacker (see figure \ref{cryptogame:6.a.1}) $\mathcal{A}$ is able to distinguish with non negligible probability the CPA games\footnote{as defined in class} $G_{\Pi, \mathcal{A}}^{CPA}(\lambda, b), b \in \bits$: $\mathcal{A}$ sends two messages $m_0^*$ and $m_1^*$, and receives a ciphertext $c_b^*$ (remind that the goal for the attacker is to guess $b$). Then it asks for exponentially many encryptions of $m_0^*$: if it gets back $c_b^*$, then returns $b' = 0$; otherwise, if at the end of all these queries, it never observes the desired ciphertext, returns $b'=1$. Note that if the challenger selects $b = 1$, the attacker wins with probability 1 (because it will never\footnote{$\dec$ is deterministic: it uses the secret key and (part of) the ciphertext to extract the message.} observe $c_1^*$ asking for the encryption of $m_0$); instead, if $b = 0$, it loses the game with negligible probability.	Indeed, let assume that the number of queries is $Q = 2^{p(\lambda)}$: then, the probability that after $Q$ runs, the challenger never encrypts the message in the same way\footnote{clearly the secret key $k$ is fixed: what continuously changes is the random information used by $\enc$.} he did the first time is $ \le (1 - \frac{1}{2^{p(\lambda)}})^{2^{p(\lambda)}} \le \frac{1}{e}$. But then:
+		      \[ \P[G_{\Pi, \mathcal{A}}^{CPA}(\lambda, 1) = 1] - \P[G_{\Pi, \mathcal{A}}^{CPA}(\lambda, 0) = 1] \ge 1 - \frac{1}{e} \]
+		      i.e. non-negligible.
+	      \end{solution}
+
 	\item Let $\mathcal{F} =  \{ F_k: \bits^n \to \bits^n \}_{k \in \bits^\lambda}$ be a family of pseudorandom permutations, and define a fixed-length encryption scheme $(\enc, \dec)$ as follows: upon input message $m \in \bits^{n/2}$ and key $k \in \bits^\lambda$ , algorithm $\enc$ chooses a random string $r \ud  \bits^{n/2}$ and computes $c \deq F_k(r||m)$. Show how to decrypt, and prove that this scheme is CPA-secure for messages of length $n/2$.
 
-	\begin{solution}
-	    \begin{cryptoredux}
-			{6.b.1}
-			{Simulation of $Game_{\mathcal{A}^*}^{\texttt{PRF}}(\lambda)$. Base an attack to PRF $F_k$, assuming the existence of a PPT attacker $\mathcal{A}$, able to break the CPA-security of $F$ with non negligible probability. $\mathcal{A}^*$ returns a bit $b$ to the challenger $\mathcal{C}$, in order to distinguish.}
-			{}
-			{}
-			{}
-			\cseqchallenger{$k \ud \bits^\lambda$}
-			\cseqadversary{$r \ud \bits^{n/2}$}
-			\cseqdelay
-			\cseqbeginloop
-			\return{}{$m$}{}
-			\send{}{$r||m$}{}
-			\receive{$c \ud F_k(r||m)$}{$c$}{}
-			\invoke{}{$c$}{}
-			\cseqendloop
-			\cseqdelay
-			\return{}{$m_0^*, m_1^*$}{}
-			\cseqadversary{$b \ud \bits$}
-			\send{}{$r||m_b^*$}{}
-			\receive{\shortstack[l]{
-					$c^* \ud F_k(r||m_b^*)$
-			}}{$c^*$}{}
-			\invoke{}{$c*$}{}
-			\cseqdelay
-			\cseqbeginloop
-			\return{}{$m$}{}
-			\send{}{$r||m$}{}
-			\receive{$c \ud F_k(m)$}{$c$}{}
-			\invoke{}{$c$}{}
-			\cseqendloop
-			\cseqdelay
-			\return{}{$b'$}{}
-            \send{}{$b \xor b'$}{}
-		\end{cryptoredux}
+	      \begin{solution}
+		      \begin{cryptoredux}
+			      {6.b.1}
+			      {Simulation of $Game_{\mathcal{A}^*}^{\texttt{PRF}}(\lambda)$. Base an attack to PRF $F_k$, assuming the existence of a PPT attacker $\mathcal{A}$, able to break the CPA-security of $F$ with non-negligible probability. $\mathcal{A}^*$ returns a bit $b$ to the challenger $\mathcal{C}$, in order to distinguish.}
+			      {}
+			      {}
+			      {}
+			      \cseqchallenger{$k \ud \bits^\lambda$}
+			      \cseqadversary{$r \ud \bits^{n/2}$}
+			      \cseqdelay
+			      \cseqbeginloop
+			      \return{}{$m$}{}
+			      \send{}{$r||m$}{}
+			      \receive{$c \ud F_k(r||m)$}{$c$}{}
+			      \invoke{}{$c$}{}
+			      \cseqendloop
+			      \cseqdelay
+			      \return{}{$m_0^*, m_1^*$}{}
+			      \cseqadversary{$b \ud \bits$}
+			      \send{}{$r||m_b^*$}{}
+			      \receive{\shortstack[l]{
+					      $c^* \ud F_k(r||m_b^*)$
+				      }}{$c^*$}{}
+			      \invoke{}{$c*$}{}
+			      \cseqdelay
+			      \cseqbeginloop
+			      \return{}{$m$}{}
+			      \send{}{$r||m$}{}
+			      \receive{$c \ud F_k(m)$}{$c$}{}
+			      \invoke{}{$c$}{}
+			      \cseqendloop
+			      \cseqdelay
+			      \return{}{$b'$}{}
+			      \send{}{$b \xor b'$}{}
+		      \end{cryptoredux}
 
-	    \begin{cryptoredux}
-			{6.b.2}
-			{Simulation of $Game_{\mathcal{A}^*}^{\texttt{random}}(\lambda)$. Same approach of \ref{cryptoredux:6.b.1}, but in this case the challenger uses random values from a randomly chosen permutation P.}
-			{}
-			{}
-			{}
-			\cseqchallenger{$P \ud \mathcal{P}(n)$}
-			\cseqadversary{$r \ud \bits^{n/2}$}
-			\cseqdelay
-			\cseqbeginloop
-			\return{}{$m$}{}
-			\send{}{$r||m$}{}
-			\receive{$c \ud P(r||m)$}{$c$}{}
-			\invoke{}{$c$}{}
-			\cseqendloop
-			\cseqdelay
-			\return{}{$m_0^*, m_1^*$}{}
-			\cseqadversary{$b \ud \bits$}
-			\send{}{$r||m_b^*$}{}
-			\receive{\shortstack[l]{
-					$c^* \ud P(r||m_b^*)$
-			}}{$c^*$}{}
-			\invoke{}{$c*$}{}
-			\cseqdelay
-			\cseqbeginloop
-			\return{}{$m$}{}
-			\send{}{$r||m$}{}
-			\receive{$c \ud P(m)$}{$c$}{}
-			\invoke{}{$c$}{}
-			\cseqendloop
-			\cseqdelay
-			\return{}{$b'$}{}
-			\send{}{$b \xor b'$}{}
-		\end{cryptoredux}		
-		Since $F$ is a PRP it is efficiently invertible; so in order to decrypt, we do: $F_k^{-1}(c) = r || m$ and then we only take the last $n/2$ bits.
+		      \begin{cryptoredux}
+			      {6.b.2}
+			      {Simulation of $Game_{\mathcal{A}^*}^{\texttt{random}}(\lambda)$. Same approach of \ref{cryptoredux:6.b.1}, but in this case the challenger uses random values from a randomly chosen permutation P.}
+			      {}
+			      {}
+			      {}
+			      \cseqchallenger{$P \ud \mathcal{P}(n)$}
+			      \cseqadversary{$r \ud \bits^{n/2}$}
+			      \cseqdelay
+			      \cseqbeginloop
+			      \return{}{$m$}{}
+			      \send{}{$r||m$}{}
+			      \receive{$c \ud P(r||m)$}{$c$}{}
+			      \invoke{}{$c$}{}
+			      \cseqendloop
+			      \cseqdelay
+			      \return{}{$m_0^*, m_1^*$}{}
+			      \cseqadversary{$b \ud \bits$}
+			      \send{}{$r||m_b^*$}{}
+			      \receive{\shortstack[l]{
+					      $c^* \ud P(r||m_b^*)$
+				      }}{$c^*$}{}
+			      \invoke{}{$c*$}{}
+			      \cseqdelay
+			      \cseqbeginloop
+			      \return{}{$m$}{}
+			      \send{}{$r||m$}{}
+			      \receive{$c \ud P(m)$}{$c$}{}
+			      \invoke{}{$c$}{}
+			      \cseqendloop
+			      \cseqdelay
+			      \return{}{$b'$}{}
+			      \send{}{$b \xor b'$}{}
+		      \end{cryptoredux}
+		      Since $F$ is a PRP it is efficiently invertible; so in order to decrypt, we do: $F_k^{-1}(c) = r || m$ and then we only take the last $n/2$ bits.
 
-		Assume the scheme is not CPA-secure: then there exists an efficient attacker $\mathcal{A}$ able to break our scheme (win the CPA game with non negligible probability); but then we can break $F$ too, i.e. we can build on top of it an attacker $\mathcal{A}^*$ able to distinguish with non negligible probability between a random distribution (figure \ref{cryptoredux:6.b.2}) and the output of $F_k$ (figure \ref{cryptoredux:6.b.1}). Indeed, $A^*$ whenever $\mathcal{A}$ asks for some message $m$ to be encrypted, appends this to some random $r \in \bits^{n/2}$, and forwards this new message $m'\deq r||m$ to the challenger $\mathcal{C}$; finally, it forwards the ciphertext $c$, provided by $\mathcal{C}$ to the attacker. This is done for all the messages queried by $\mathcal{A}$ (this is allowed, of course, up to a polynomial number of queries since both $\mathcal{A}$ and $\mathcal{A}^*$ are PPT) both before and after the messages $m_0^*, m_1^*$: when these two messages are sent by $\mathcal{A}$, $\mathcal{A}^*$ selects at random a bit $b$, simulating the CPA game, modifies and forwards $m_b^*$ in the very same way as before. When the attacker outputs a bit $b'$, $\mathcal{A}^*$ forwards to the challenger 0 if and only if $b = b'$. Note that, if the challenger takes the value at random, we expect to win only in half of the cases; otherwise, by assumption, $\mathcal{A}^*$ returns 0 with a non negligible probability $\ge \frac{1}{2} + \frac{1}{p(\lambda)}$. This means that $\mathcal{A}^*$ can distinguish between the two scenarios (i.e. the two games) since:
-		
-		\[\P[Game_{\mathcal{A}^*}^{\texttt{PRF}}(\lambda) = 0] - \P[Game_{\mathcal{A}^*}^{\texttt{random}}(\lambda) = 0] \ge \frac{1}{p(\lambda)}\]
-		that is non negligible.
-	\end{solution}	
+		      Assume the scheme is not CPA-secure: then there exists an efficient attacker $\mathcal{A}$ able to break our scheme (win the CPA game with non-negligible probability); but then we can break $F$ too, i.e. we can build on top of it an attacker $\mathcal{A}^*$ able to distinguish with a non-negligible probability between a random distribution (figure \ref{cryptoredux:6.b.2}) and the output of $F_k$ (figure \ref{cryptoredux:6.b.1}). Indeed, $A^*$ whenever $\mathcal{A}$ asks for some message $m$ to be encrypted, appends this to some random $r \in \bits^{n/2}$, and forwards this new message $m'\deq r||m$ to the challenger $\mathcal{C}$; finally, it forwards the ciphertext $c$, provided by $\mathcal{C}$ to the attacker. This is done for all the messages queried by $\mathcal{A}$ (this is allowed, of course, up to a polynomial number of queries since both $\mathcal{A}$ and $\mathcal{A}^*$ are PPT) both before and after the messages $m_0^*, m_1^*$: when these two messages are sent by $\mathcal{A}$, $\mathcal{A}^*$ selects at random a bit $b$, simulating the CPA game, modifies and forwards $m_b^*$ in the very same way as before. When the attacker outputs a bit $b'$, $\mathcal{A}^*$ forwards to the challenger 0 if and only if $b = b'$. Note that, if the challenger takes the value at random, we expect to win only in half of the cases; otherwise, by assumption, $\mathcal{A}^*$ returns 0 with a non negligible probability $\ge \frac{1}{2} + \frac{1}{p(\lambda)}$. This means that $\mathcal{A}^*$ can distinguish between the two scenarios (i.e. the two games) since:
+
+		      \[\P[Game_{\mathcal{A}^*}^{\texttt{PRF}}(\lambda) = 0] - \P[Game_{\mathcal{A}^*}^{\texttt{random}}(\lambda) = 0] \ge \frac{1}{p(\lambda)}\]
+		      that is non-negligible.
+	      \end{solution}
 \end{enumerate}

@@ -1,78 +1,78 @@
 \section{Message Authentication}
 \begin{enumerate}[(a)]
 	\item Assume UF-CMA MACs exist. Prove that there exists a MAC that is UF-CMA but is not strongly UF-CMA. (Recall that strong unforgeability allows the attacker to
-	produce a forgery $(m^*, \tau^*)$ such that $(m^*, \tau^*) \ne (m, \tau)$ for all messages m queried.
-	
-	\begin{solution}
-		Under this assumption, we can always build $M'$ such that $\tag'(m)\deq (\tag(m) || b), b \ud \bits$ and $\vrfy'(m, \tau)\deq \vrfy(m, \tau')$, where $\tau'$ is $\tau$ without the last bit: with this scheme, for each message $m$, we can produce $2k$ valid tags, for some $k \in \N \backslash \{0\}$
-		
-		It easy to prove that $M'$ is not strongly UF-CMA, because if we know a valid pair $(m^*, \tau_1)$, obtained querying the oracle, we can produce a new valid pair $(m^*, \tau_2)$, flipping the last bit of $\tau_1$.
-		But this scheme is still UF-CMA: assume not; then there exists some efficient attacker $\mathcal{A}$ able to produce, with non negligible probability, a valid pair $(m, \tau)$: this pair is still valid for $M$ if we remove the last bit of $\tau$.
-	\end{solution}
+	      produce a forgery $(m^*, \tau^*)$ such that $(m^*, \tau^*) \ne (m, \tau)$ for all messages m queried.
+
+	      \begin{solution}
+		      Under this assumption, we can always build $M'$ such that $\tag'(m)\deq (\tag(m) || b), b \ud \bits$ and $\vrfy'(m, \tau)\deq \vrfy(m, \tau')$, where $\tau'$ is $\tau$ without the last bit: with this scheme, for each message $m$, we can produce $2k$ valid tags, for some $k \in \N \backslash \{0\}$
+
+		      It easy to prove that $M'$ is not strongly UF-CMA, because if we know a valid pair $(m^*, \tau_1)$, obtained querying the oracle, we can produce a new valid pair $(m^*, \tau_2)$, flipping the last bit of $\tau_1$.
+		      But this scheme is still UF-CMA: assume not; then there exists some efficient attacker $\mathcal{A}$ able to produce, with non-negligible probability, a valid pair $(m, \tau)$: this pair is still valid for $M$ if we remove the last bit of $\tau$.
+	      \end{solution}
 
 	\item Assume a generalization of MACs where a MAC $\Pi$ consists of a pair of algorithms $(\tag, \vrfy)$, such that $\tag$ is as defined in class (except that it could be randomized), whereas $\vrfy$ is a deterministic algorithm that takes as input a candidate pair $(m, \tau )$	and returns a decision bit $d \in \bits$ (indicating whether $\tau$ is a valid tag of $m$). Consider a variant of the game defining UF-CMA security of a MAC $\Pi$ = $(\tag, \vrfy)$, with key space $K = \bits^\lambda$, where the adversary is additionally granted access to a verification oracle $\vrfy(k, \cdot, \cdot)$.
-	
-	\begin{enumerate}[(i)]
-		\item Make the above definition precise, using the formalism we used in class. Call the new notion "unforgeability under chosen-message and verification attacks" (UF-CMVA).
-		
-		\begin{solution}
-			Let consider the following game $Game_{\Pi, \mathcal{A}}^{\texttt{UF-CMVA}}(\lambda)$:
-			\begin{enumerate}
-				\item the challenger $\mathcal{C}$ choses a key $k \ud \bits^\lambda$
-				\item $\mathcal{A}$ can query (up to a polynomial number of times) $\mathcal{C}$ with some message $m$ and receive back $\tag(k, m)$
-				\item $\mathcal{A}$ can query (up to a polynomial number of times) $\mathcal{C}$ with some pair $(m, \tau)$ and receive back the output of $\vrfy(k, m, \tau)$
-				\item $\mathcal{A}$ forges a pair $(m^*, \tau^*)$ such that $m^* \ne m, \forall m$ queried ($m^*$ has to be "fresh")
-				\item the output of the game is $\vrfy(k, m^*, \tau^*)$ (i.e. 1 in case of win, 0 otherwise)
-			\end{enumerate}
-			We say that a MAC $\Pi$ is UF-CMVA-secure if $\forall$ PPT attackers $\mathcal{A}, \exists \epsilon(\lambda) \in negl(\lambda)$:
-			\[\P[Game_{\Pi, \mathcal{A}}^{\texttt{UF-CMVA}}(\lambda) = 1] \le \epsilon(\lambda) \]
-		\end{solution}
-		
-		\item Show that whenever a MAC has unique tags (i.e., for every key $k$ there is only one valid tag $\tau$ for each message $m$) then UF-CMA implies UF-CMVA.
-		
-		\begin{solution}
-			First of all, note that the only difference between the two games (i.e. the two definitions of security UF-CMA and UF-CMVA) is that in $Game_{\Pi, \mathcal{A}}^{\texttt{UF-CMVA}}(\lambda)$ the attacker can verify the validity of pairs $(m, \tau)$ before submitting its proposal $(m^*, \tau^*)$.
-			It is easy to see that if for every key $k$, there is only one valid tag $\tau$ for each message $m$, the above situation can be simulated in a very simple way.
-			
-			Whenever $\mathcal{A}$ asks for some pair $(m, \tau)$ to be verified, we can simply forward to the challenger $m$ and receive back some $\tau_m$: if $\tau_m = \tau$, then we know that $\vrfy(m, \tau) = \vrfy(m, \tau_m) = 1$; otherwise, we know\footnote{we know it with probability 1: here it is crucial the assumption of unique tags, once the key is fixed.} that the pair $(m, \tau)$ is not valid (i.e. $\vrfy(m, \tau) = 0$).
-			Of course, this trick does not alter the number of queries (because $\mathcal{A}$ is a PPT making a polynomial number of queries) and does not modify the correctness.
-		\end{solution}
-		
-		\item Show that if tags are not unique there exists a MAC that satisfies UF-CMA but not UF-CMVA.
-	
-		\begin{solution}
-			From previous exercise, we know that if tags are unique (once the key is fixed), then UF-CMA implies UF-CMVA. Instead, if this condition does not hold, we can build some UF-CMA scheme that is not UF-CMVA. Assume to have some UF-CMA-secure scheme $\Pi\deq(\tag, \vrfy)$, that produces tags of $n$ bits for secret keys $\in \bits^\lambda$.
-			
-			Let $\Pi'\deq(\tag', \vrfy')$ such that $\tag'(k, m)$ computes $\tag(k,m)$ and appends some $x \in \bits^{\log \lambda}$ to it: this x is equal to $0^{\log \lambda}$, unless with some negligible probability, $2^{-\lambda}$, the algorithm $\tag'$ decides to chose as $x$ the binary representation of an index $i$ such that the i-th bit of the secret key $k_i = 1$\footnote{if such an index exists. The case for $k = 0^\lambda$ is also handled by the algorithm.}. The definition of algorithm $\vrfy'$ is straightforward, since it has to check the correctness of the first $n$ bits of the tag, i.e. it uses $\vrfy$ on that part of the tag. Then it has also to check that the bit $k_x$ is 1 (this is done if and only if $x \ne 0$).
-			
-			Here I also provide the pseudocodes of such algorithms.
 
-			\subsubsection*{Pseudocode of $\tag'(k,m)$}
-			\begin{algorithm}[H]
-				\KwIn{secret key $k$, message $m$}
-				\KwOut{a valid tag $\tau' \in \bits^{n + \log{\lambda}}$}
-				$\tau \ud Tag(k, m)$ \\
-				luck $\ud \bits^\lambda$ \\
-				$x \leftarrow 0$ \\
-				\uIf{luck $= 0^\lambda \and k \ne 0^\lambda$}{$x \ud \{i : k_i = 1\}$}
-				\Return $\tau || \langle x \rangle\footnote{the binary ($\log \lambda$ bits) representation of x}$
-				%\caption{}
-			\end{algorithm}
+	      \begin{enumerate}[(i)]
+		      \item Make the above definition precise, using the formalism we used in class. Call the new notion "unforgeability under chosen-message and verification attacks" (UF-CMVA).
 
-			\subsubsection*{Pseudocode of $\vrfy'(k,m, (\tau || x))$}
-			\begin{algorithm}[H]
-				\KwIn{secret key $k$, message $m$, tag $(\tau || x), x\in \bits^{log \lambda}$}
-				\KwOut{a decision bit $d \in \bits$}
-				$d \leftarrow \vrfy(k, m, \tau)$ \\
-				$d' \leftarrow 1$ \\
-				\uIf{$x \ne 0^{\log \lambda}$}{\tcc{the $\in$ operator returns a bit (1 for true, 0 else)}
-					$d' =  x \in \{\langle i\rangle: k_i = 1\}$}
-				\Return $d \and d'$
-			\end{algorithm}
-		
-		It is clear that such a scheme cannot be UF-CMVA-secure, because an attacker $\mathcal{A}$, after receiving some valid pair $(m, (\tau || x))$ can start querying the challenger (up to $\lambda - 1$ times, this is clearly polynomial) in order to leak bits of the secret keys: it tests all possible $x \in \bits^{\log \lambda}$, without varying $m$ and $\tau$; depending on the output of $\vrfy'$ on its inputs, it can understand whether a certain bit of $k$ is 1 or 0. Once it knows $\lambda - 1$ bits of the secret key $k$, it is very simple to guess the last one (i.e. the first bit $k_0$): e.g. it can compute a tag (valid with probability $1/2$) for a fresh message and ask the challenger to verify it; at this point it knows the full key, so it is really easy to always win the UF-CMVA game!
+		            \begin{solution}
+			            Let consider the following game $Game_{\Pi, \mathcal{A}}^{\texttt{UF-CMVA}}(\lambda)$:
+			            \begin{enumerate}
+				            \item the challenger $\mathcal{C}$ choses a key $k \ud \bits^\lambda$
+				            \item $\mathcal{A}$ can query (up to a polynomial number of times) $\mathcal{C}$ with some message $m$ and receive back $\tag(k, m)$
+				            \item $\mathcal{A}$ can query (up to a polynomial number of times) $\mathcal{C}$ with some pair $(m, \tau)$ and receive back the output of $\vrfy(k, m, \tau)$
+				            \item $\mathcal{A}$ forges a pair $(m^*, \tau^*)$ such that $m^* \ne m, \forall m$ queried ($m^*$ has to be "fresh")
+				            \item the output of the game is $\vrfy(k, m^*, \tau^*)$ (i.e. 1 in case of winning, 0 otherwise)
+			            \end{enumerate}
+			            We say that a MAC $\Pi$ is UF-CMVA-secure if $\forall$ PPT attackers $\mathcal{A}, \exists \epsilon(\lambda) \in negl(\lambda)$:
+			            \[\P[Game_{\Pi, \mathcal{A}}^{\texttt{UF-CMVA}}(\lambda) = 1] \le \epsilon(\lambda) \]
+		            \end{solution}
 
-		On the contrary, this scheme preserves the UF-CMA security property. Indeed, an attacker can only ask the challenger to tag messages, but has no control over the choice of the last $\log \lambda$ bits of the tag. Since the probability to \textbf{not} use $0^{\log \lambda}$ as "padding" is negligible ($2^{-\lambda}$ by definition of $\enc'$), we can assume that the attacker can observe one single\footnote{the average number of bits of the secret key we expect to be leaked after $2^\lambda$ queries is 1: this is clearly not enough to retain a non negligible advantage, so the number of queries should be even higher to leak enough bits! But this is for sure out the possibilities of a PPT attacker.} bit of the key only after exponentially (in $\lambda$) many queries.
-		\end{solution}
-	\end{enumerate}	
+		      \item Show that whenever a MAC has unique tags (i.e., for every key $k$ there is only one valid tag $\tau$ for each message $m$) then UF-CMA implies UF-CMVA.
+
+		            \begin{solution}
+			            First of all, note that the only difference between the two games (i.e. the two definitions of security UF-CMA and UF-CMVA) is that in $Game_{\Pi, \mathcal{A}}^{\texttt{UF-CMVA}}(\lambda)$ the attacker can verify the validity of pairs $(m, \tau)$ before submitting its proposal $(m^*, \tau^*)$.
+			            It is easy to see that if for every key $k$, there is only one valid tag $\tau$ for each message $m$, the above situation can be simulated in a very simple way.
+
+			            Whenever $\mathcal{A}$ asks for some pair $(m, \tau)$ to be verified, we can simply forward to the challenger $m$ and receive back some $\tau_m$: if $\tau_m = \tau$, then we know that $\vrfy(m, \tau) = \vrfy(m, \tau_m) = 1$; otherwise, we know\footnote{we know it with probability 1: here it is crucial the assumption of unique tags, once the key is fixed.} that the pair $(m, \tau)$ is not valid (i.e. $\vrfy(m, \tau) = 0$).
+			            Of course, this trick does not alter the number of queries (because $\mathcal{A}$ is a PPT making a polynomial number of queries) and does not modify the correctness.
+		            \end{solution}
+
+		      \item Show that if tags are not unique there exists a MAC that satisfies UF-CMA but not UF-CMVA.
+
+		            \begin{solution}
+			            From the previous exercise, we know that if tags are unique (once the key is fixed), then UF-CMA implies UF-CMVA. Instead, if this condition does not hold, we can build some UF-CMA scheme that is not UF-CMVA. Assume to have some UF-CMA-secure scheme $\Pi\deq(\tag, \vrfy)$, that produces tags of $n$ bits for secret keys $\in \bits^\lambda$.
+
+			            Let $\Pi'\deq(\tag', \vrfy')$ such that $\tag'(k, m)$ computes $\tag(k,m)$ and appends some $x \in \bits^{\log \lambda}$ to it: this x is equal to $0^{\log \lambda}$, unless with some negligible probability, $2^{-\lambda}$, the algorithm $\tag'$ decides to chose as $x$ the binary representation of an index $i$ such that the i-th bit of the secret key $k_i = 1$\footnote{if such an index exists. The case for $k = 0^\lambda$ is also handled by the algorithm.}. The definition of algorithm $\vrfy'$ is straightforward, since it has to check the correctness of the first $n$ bits of the tag, i.e. it uses $\vrfy$ on that part of the tag. Then it has also to check that the bit $k_x$ is 1 (this is done if and only if $x \ne 0$).
+
+			            Here I also provide the pseudocodes of such algorithms.
+
+			            \subsubsection*{Pseudocode of $\tag'(k,m)$}
+			            \begin{algorithm}[H]
+				            \KwIn{secret key $k$, message $m$}
+				            \KwOut{a valid tag $\tau' \in \bits^{n + \log{\lambda}}$}
+				            $\tau \ud Tag(k, m)$ \\
+				            luck $\ud \bits^\lambda$ \\
+				            $x \leftarrow 0$ \\
+				            \uIf{luck $= 0^\lambda \and k \ne 0^\lambda$}{$x \ud \{i : k_i = 1\}$}
+				            \Return $\tau || \langle x \rangle\footnote{the binary ($\log \lambda$ bits) representation of x}$
+				            %\caption{}
+			            \end{algorithm}
+
+			            \subsubsection*{Pseudocode of $\vrfy'(k,m, (\tau || x))$}
+			            \begin{algorithm}[H]
+				            \KwIn{secret key $k$, message $m$, tag $(\tau || x), x\in \bits^{log \lambda}$}
+				            \KwOut{a decision bit $d \in \bits$}
+				            $d \leftarrow \vrfy(k, m, \tau)$ \\
+				            $d' \leftarrow 1$ \\
+				            \uIf{$x \ne 0^{\log \lambda}$}{\tcc{the $\in$ operator returns a bit (1 for true, 0 else)}
+					            $d' =  x \in \{\langle i\rangle: k_i = 1\}$}
+				            \Return $d \and d'$
+			            \end{algorithm}
+
+			            It is clear that such a scheme cannot be UF-CMVA-secure, because an attacker $\mathcal{A}$, after receiving some valid pair $(m, (\tau || x))$ can start querying the challenger (up to $\lambda - 1$ times, this is clearly polynomial) in order to leak bits of the secret keys: it tests all possible $x \in \bits^{\log \lambda}$, without varying $m$ and $\tau$; depending on the output of $\vrfy'$ on its inputs, it can understand whether a certain bit of $k$ is 1 or 0. Once it knows $\lambda - 1$ bits of the secret key $k$, it is very simple to guess the last one (i.e. the first bit $k_0$): e.g. it can compute a tag (valid with probability $1/2$) for a fresh message and ask the challenger to verify it; at this point it knows the full key, so it is really easy to always win the UF-CMVA game!
+
+			            On the contrary, this scheme preserves the UF-CMA security property. Indeed, an attacker can only ask the challenger to tag messages, but has no control over the choice of the last $\log \lambda$ bits of the tag. Since the probability to \textbf{not} use $0^{\log \lambda}$ as "padding" is negligible ($2^{-\lambda}$ by definition of $\enc'$), we can assume that the attacker can observe one single\footnote{the average number of bits of the secret key we expect to be leaked after $2^\lambda$ queries is 1: this is clearly not enough to retain a non-negligible advantage, so the number of queries should be even higher to leak enough bits! But this is for sure out the possibilities of a PPT attacker.} bit of the key only after exponentially (in $\lambda$) many queries.
+		            \end{solution}
+	      \end{enumerate}
 \end{enumerate}
