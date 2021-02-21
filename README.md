@@ -17,9 +17,10 @@ This repository includes my solutions to
 
 I have also included course notes taken by some students
 
-|[PDF Notes](/Notes/main.pdf)|
-|----------------------------|
-| [![PDF Notes](/Notes/notes.png)](/Notes/notes.pdf)|
+|[PDF Notes](/Notes/main.pdf)|[Homework 1](/Homework/hw1.pdf)|[Homework 2](/Homework/hw2.pdf)|
+|----------------------------|----------------------------|----------------------------|
+| [![PDF Notes](/Notes/notes.png)](/Notes/notes.pdf)| [![HW1](/Homework/hw1.png)](/Homework/hw1.pdf)| [![HW2](/Homework/hw2.png)](/Homework/hw2.pdf)|
+
 
 ## Contributing
 
