@@ -5,6 +5,10 @@
 
 This repo contains utils for class [1047622](http://danieleventuri.altervista.org/crypto1920.shtml) (prof. D. Venturi).
 
+|[Course Notes](/Notes/main.pdf)|[Homework 1](/Homework/hw1.pdf)|[Homework 2](/Homework/hw2.pdf)|
+|----------------------------|----------------------------|----------------------------|
+| [![Course Notes](/Notes/notes.png)](/Notes/notes.pdf)| [![HW1](/Homework/hw1.png)](/Homework/hw1.pdf)| [![HW2](/Homework/hw2.png)](/Homework/hw2.pdf)|
+
 ## What do I find here?
 
 This repository includes my solutions to
@@ -13,14 +17,7 @@ This repository includes my solutions to
 * some previous exams
 * some exercises of *Cryptography in Wonderland*
 
-### Notes
-
-I have also included course notes taken by some students
-
-|[PDF Notes](/Notes/main.pdf)|[Homework 1](/Homework/hw1.pdf)|[Homework 2](/Homework/hw2.pdf)|
-|----------------------------|----------------------------|----------------------------|
-| [![PDF Notes](/Notes/notes.png)](/Notes/notes.pdf)| [![HW1](/Homework/hw1.png)](/Homework/hw1.pdf)| [![HW2](/Homework/hw2.png)](/Homework/hw2.pdf)|
-
+I have also included course notes taken by some students.
 
 ## Contributing
 
