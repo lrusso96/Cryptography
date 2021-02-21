@@ -1,0 +1,27 @@
+\startcomponent cover
+
+\setvariables[document][
+    title=Cryptography,
+    subtitle=Notes by students,
+]
+
+\startpagemakeup
+
+\startMPcode
+
+StartPage;
+
+fill Page enlarged 5mm withcolor \MPcolor{black};
+
+draw anchored.lrt(image(draw textext("\getvariable{document}{title}") xsized(.800PaperWidth)            withcolor white), (lrcorner Page) shifted (-PaperWidth/20, PaperWidth/ 5));
+draw anchored.lrt(image(draw textext("\getvariable{document}{subtitle}") xsized(.700PaperWidth)            withcolor white),(lrcorner Page) shifted (-PaperWidth/20, PaperWidth/10));
+
+setbounds currentpicture to Page;
+
+StopPage;
+
+\stopMPcode
+
+\stoppagemakeup
+
+\stopcomponent

@@ -7,13 +7,22 @@ This repo contains utils for class [1047622](http://danieleventuri.altervista.or
 
 ## What do I find here?
 
-This repository includes my solutions to:
+This repository includes my solutions to
 
 * homework 1 & 2
 * some previous exams
 * some exercises of *Cryptography in Wonderland*
 
-and course notes by some other students.
+### Notes
+
+I have also included course notes taken by some students
+
+|[PDF Notes](/Notes/main.pdf)|
+|----------------------------|
+| [![PDF Notes](/Notes/notes.png)](/Notes/notes.pdf)|
+
+## Contributing
 
 [See the page of discussions](https://github.com/lrusso96/Cryptography/discussions) to discover suggested study material, discuss about issues or errors and ask questions.
+
 Feel free to open PR as well!
