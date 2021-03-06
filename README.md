@@ -2,8 +2,7 @@
 
 [![made-with-latex](https://img.shields.io/badge/Made%20with-LaTeX-008080.svg)](https://www.latex-project.org/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![HitCount](http://hits.dwyl.com/lrusso96/Cryptography.svg)](http://hits.dwyl.com/lrusso96/Cryptography)
-
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Flrusso96%2FCryptography)](https://hits.seeyoufarm.com)
 This repo contains utils for class [1047622](http://danieleventuri.altervista.org/crypto1920.shtml) (prof. D. Venturi).
 
 |[Course Notes](/Notes/main.pdf)|[Homework 1](/Homework/hw1.pdf)|[Homework 2](/Homework/hw2.pdf)|
