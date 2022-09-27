@@ -4,7 +4,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Flrusso96%2FCryptography&icon=readthedocs.svg&icon_color=%23E7E7E7&title=daily%20%2F%20total%20views)](https://hits.seeyoufarm.com)
 
-This repo contains utils for class [1047622](http://danieleventuri.altervista.org/crypto1920.shtml) (prof. D. Venturi).
+This repo contains utils for class [1047622](http://danieleventuri.altervista.org/crypto.shtml) (prof. D. Venturi).
 
 |[Course Notes](/Notes/notes.pdf)|[Homework 1](/Homework/hw1.pdf)|[Homework 2](/Homework/hw2.pdf)|
 |----------------------------|----------------------------|----------------------------|
